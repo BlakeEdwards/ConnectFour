@@ -75,8 +75,9 @@ namespace ConnectFour
             if (!move_Available(col)) return false;
             else
             {
-                row = addToCol(col,playerId);
-                board.DrawBoard();
+                row = getRow(col,playerId);
+                board.boardState[col, row] = playerId;      //update Boardstate With move
+                board.AddPeice(col,row);
                turn *= -1;
             }
             return win(playerId,col, row);
@@ -92,19 +93,18 @@ namespace ConnectFour
         }
 
         //add to coloum  at found row return the row height of placed peice
-        private int addToCol(int col,int playerId)
+        private int getRow(int col,int playerId)
         {
             for (int i = 0; i < 5; i++)
             {
                 if (board.boardState[col,i+1] != 0)
                 {
-                    board.boardState[col, i] = playerId;                    
                     return i;
                 }
             }
-                board.boardState[col, 5] = playerId;
             return 5;
         }
+        
 
         /*Check for Win 
          * 0 = no win
