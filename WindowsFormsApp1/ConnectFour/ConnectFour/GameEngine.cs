@@ -7,15 +7,11 @@ using System.Threading.Tasks;
 
 namespace ConnectFour
 {
-        public class updateBoardArgs : EventArgs        // define my event args
-        {
-            public updateBoardArgs(Bitmap img) {this.img = img;}
-            public Bitmap img{ get; set; }
-        }
-    class GameEngine
+    class GameEngine: IDisposable
     {
         //public event EventHandler<MultipleOfFiveEventArgs> OnMultipleOfFiveReached;
-        public event EventHandler<updateBoardArgs> onUpdate;        // define an event
+        public event EventHandler<UpdateBoardArgs> onUpdate;        // define an event
+        public event EventHandler<MovedMadeArgs> onMoveMade;
         public int Height { private get; set; }
         public int Width { private get; set; }
         public int turn;
@@ -32,7 +28,7 @@ namespace ConnectFour
             breaking = false;
         }
 
-        public Bitmap updateCanvas()
+        public Bitmap UpdateCanvas()
         {
             return board.DrawBoard();
             //onUpdate(this, new updateBoardArgs(board.DrawBoard()));
@@ -47,14 +43,14 @@ namespace ConnectFour
                 //bound Col 0-6
                 if (col > 6) col = 6;
                 if (col < 0) col = 0;
-                if (!move_Available(col)) return board.DrawBoard();
-                int row = hover_Height(col);
+                if (!Move_Available(col)) return board.getBoardImg();
+                int row = Hover_Height(col);
                 return board.playerHover(playerId, col, row);
             }
-            else return board.DrawBoard();
+            else return board.getBoardImg();
 
         }
-        private int hover_Height(int col)
+        private int Hover_Height(int col)
         {
             for (int i = 0; i < 5; i++)
             {
@@ -72,18 +68,19 @@ namespace ConnectFour
             int row = board.getRowNumber(y);
             col = (col > 6) ? 6 : col;              // bound col so it can go over number of cols
             //check a place is available in Coloum
-            if (!move_Available(col)) return false;
+            if (!Move_Available(col)) return false;
             else
             {
-                row = getRow(col,playerId);
+                row = GetRow(col,playerId);
                 board.boardState[col, row] = playerId;      //update Boardstate With move
                 board.AddPeice(col,row);
-               turn *= -1;
+                
+                turn *= -1;
             }
             return win(playerId,col, row);
 
         }          
-        private bool move_Available(int col)
+        private bool Move_Available(int col)
         {            
             for (int i = 0; i < 6; i++)
             {
@@ -93,7 +90,7 @@ namespace ConnectFour
         }
 
         //add to coloum  at found row return the row height of placed peice
-        private int getRow(int col,int playerId)
+        private int GetRow(int col,int playerId)
         {
             for (int i = 0; i < 5; i++)
             {
@@ -191,7 +188,7 @@ namespace ConnectFour
             return false;            
         }
 
-    public int Get_move()
+        public int Get_move()
     {
         Random rnd = new Random();
             int num;
@@ -199,10 +196,44 @@ namespace ConnectFour
             {
                 num = rnd.Next(7);
             }
-            while (!move_Available(num));
+            while (!Move_Available(num));
         return num* (Width / 7);
     }
-        public void reset(){board.boardState = new int[7, 6];}
+
+        public void reset()
+        {
+            int h = board.getHieght();
+            int w = board.getWidth();
+            board.Dispose();
+            board = new Board(h, w);
+        }
+        //clean up
+        private bool disposed = false;        
+
+        public void Dispose()
+        {
+
+            if (!disposed)
+            {
+                // Dispose of resources held by this instance.
+                Dispose(true);
+            }
+            GC.SuppressFinalize(this);
+        }
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+
+                board.Dispose();                
+                disposed = true;
+                // Suppress finalization of this disposed instance.
+                if (disposing)
+                {
+                    GC.SuppressFinalize(this);
+                }
+            }
+        }
 
     }
 

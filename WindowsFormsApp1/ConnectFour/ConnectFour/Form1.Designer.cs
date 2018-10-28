@@ -14,7 +14,7 @@
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
-            {
+            {                
                 components.Dispose();
             }
             base.Dispose(disposing);
@@ -163,6 +163,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);            
             ((System.ComponentModel.ISupportInitialize)(this.canvas)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();

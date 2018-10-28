@@ -9,13 +9,13 @@ using System.Drawing.Drawing2D;
 
 namespace ConnectFour
 {
-    class Board
+    class Board : IDisposable
     {
         public int col { get; set; }
         public int[,] boardState { get; set; }
         private Color player1Color = Color.Red;
-        private Color player2Color = Color.YellowGreen;
-        private Color backColor = SystemColors.Control;
+        private Color player2Color = Color.Yellow;
+        private Color backColor = SystemColors.ActiveBorder;
         private Color boardColor = Color.Blue;
         private int bitMapHieght, bitMapWidth;
         private int radius;
@@ -147,6 +147,33 @@ namespace ConnectFour
         {
             bitMapHieght = hieght;
         }
+        public int getHieght() => bitMapHieght;
+        public int getWidth() => bitMapWidth;
 
+        private bool disposed = false;
+        public void Dispose()
+        {
+
+            if (!disposed)
+            {
+                // Dispose of resources held by this instance.
+                Dispose(true);
+            }
+            GC.SuppressFinalize(this);
+        }
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+
+                DrawArea.Dispose();                
+                disposed = true;
+                // Suppress finalization of this disposed instance.
+                if (disposing)
+                {
+                    GC.SuppressFinalize(this);
+                }
+            }
+        }
     }
 }

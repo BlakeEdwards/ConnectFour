@@ -28,7 +28,7 @@ namespace ConnectFour
             canvas.MouseMove += new MouseEventHandler(Move_Mouse);      // update mouse x/y.
             canvas.MouseMove += new MouseEventHandler(PlayerHover);
             canvas.MouseLeave += new EventHandler(ClearHover);
-            canvas.Image = engine.updateCanvas();
+            canvas.Image = engine.UpdateCanvas();
         }
 
         //private void GameUpdate(object sender, PaintEventArgs e)
@@ -37,7 +37,7 @@ namespace ConnectFour
         //}
         private void ClearHover(object sender, EventArgs e)
         {
-               canvas.Image = engine.updateCanvas();
+               canvas.Image = engine.UpdateCanvas();
         }
         private void PlayerHover(object sender, EventArgs e)
         {
@@ -83,7 +83,12 @@ namespace ConnectFour
         private void resetBoard(object sender, EventArgs e)
         {
             engine.reset();
-            canvas.Image = engine.updateCanvas();
+            canvas.Image = engine.UpdateCanvas();
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            engine.Dispose();
         }
 
         private void Move_Mouse(object sender, MouseEventArgs e)
