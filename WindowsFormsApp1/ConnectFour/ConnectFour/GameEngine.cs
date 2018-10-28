@@ -73,8 +73,7 @@ namespace ConnectFour
             {
                 row = GetRow(col,playerId);
                 board.boardState[col, row] = playerId;      //update Boardstate With move
-                board.AddPeice(col,row);
-                
+                board.AddPeice(col,row);                
                 turn *= -1;
             }
             return win(playerId,col, row);
