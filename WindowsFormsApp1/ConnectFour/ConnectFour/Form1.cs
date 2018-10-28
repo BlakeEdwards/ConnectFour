@@ -14,20 +14,23 @@ namespace ConnectFour
     {            
         //Board gameBoard;
         GameEngine engine;
-        private int x, y;
+        private int x, y, playerId;
+        private event EventHandler<CanvasClickedArgs> OnMoveMade;
         public Form1()
         {
-
+            
             InitializeComponent();
-            //DrawArea = new Bitmap(canvas.Size.Width, canvas.Size.Height);
-            //gameBoard = new Board( canvas.Size.Height, canvas.Size.Width);
+
             engine = new GameEngine(canvas.Size.Height, canvas.Size.Width);
-            //canvas.Image = DrawArea;
             this.DoubleBuffered = true;
             //this.Paint += new PaintEventHandler(GameUpdate);  // subscribe to the form paint event and run our GameUpdate
             canvas.MouseMove += new MouseEventHandler(Move_Mouse);      // update mouse x/y.
             canvas.MouseMove += new MouseEventHandler(PlayerHover);
             canvas.MouseLeave += new EventHandler(ClearHover);
+
+            this.OnMoveMade += new EventHandler<CanvasClickedArgs>(engine.Move);
+            engine.OnWin += new EventHandler<string>(Winner);
+            engine.OnUpdate += new EventHandler<Bitmap>(SetCanvas);
             canvas.Image = engine.UpdateCanvas();
         }
 
@@ -35,6 +38,18 @@ namespace ConnectFour
         //{            
         // //   canvas.Image = gameBoard.DrawBoard();
         //}
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NewGame form2 = new NewGame();
+            form2.Show();
+        }
+
+        private void SetCanvas(object sender, Bitmap img)
+        {
+            canvas.Image = img;
+            this.Invalidate();
+        }
+
         private void ClearHover(object sender, EventArgs e)
         {
                canvas.Image = engine.UpdateCanvas();
@@ -49,11 +64,6 @@ namespace ConnectFour
                 +"Player turn = "+engine.turn;
             //Call for player Peice to hover at mouse
             canvas.Image = engine.Hover(Properties.Settings.Default.userId, x, y);
-        }
-        private void newToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            NewGame form2 = new NewGame();
-            form2.Show();
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -70,16 +80,15 @@ namespace ConnectFour
 
         private void canvas_Click(object sender, EventArgs e)
         {
-            int playerId = Properties.Settings.Default.userId;
-            if (engine.Move(playerId, x, y)) System.Windows.Forms.MessageBox.Show("WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! ");
-            //Properties.Settings.Default.userId *= -1;
-            //if (Properties.Settings.Default.userId != engine.turn)
-            //   if (engine.Move(-1, engine.Get_move(), 0)) System.Windows.Forms.MessageBox.Show("WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! "); ;
-
-            //engine.win(playerId)
+            playerId = Properties.Settings.Default.userId;
+            OnMoveMade(this,new CanvasClickedArgs(x, y, playerId));
             Properties.Settings.Default.userId *= -1;
         }
 
+        private void Winner(object sender, string e)
+        {
+            System.Windows.Forms.MessageBox.Show("WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! ");
+        }
         private void resetBoard(object sender, EventArgs e)
         {
             engine.reset();

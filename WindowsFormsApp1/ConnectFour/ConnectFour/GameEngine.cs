@@ -10,8 +10,9 @@ namespace ConnectFour
     class GameEngine: IDisposable
     {
         //public event EventHandler<MultipleOfFiveEventArgs> OnMultipleOfFiveReached;
-        public event EventHandler<UpdateBoardArgs> onUpdate;        // define an event
-        public event EventHandler<MovedMadeArgs> onMoveMade;
+        public event EventHandler<Bitmap> OnUpdate;        // define an event
+        public event EventHandler<MovedMadeArgs> OnMoveMade;
+        public event EventHandler<string> OnWin;
         public int Height { private get; set; }
         public int Width { private get; set; }
         public int turn;
@@ -61,22 +62,24 @@ namespace ConnectFour
         }
 
         //Making a Move
-        public bool Move(int playerId , int x, int y)
+        public void Move(object sender, CanvasClickedArgs e)
         {
-            if (playerId != turn) return false ;     // if not players turn            
-            int col = board.getColumnNumber(x);
-            int row = board.getRowNumber(y);
+            
+            if (e.playerId != turn) return ;     // not players turn Return
+            int col = board.getColumnNumber(e.x);
+            int row = board.getRowNumber(e.y);
             col = (col > 6) ? 6 : col;              // bound col so it can go over number of cols
             //check a place is available in Coloum
-            if (!Move_Available(col)) return false;
+            if (!Move_Available(col)) return; // Move Not Avaliable Return 
             else
             {
-                row = GetRow(col,playerId);
-                board.boardState[col, row] = playerId;      //update Boardstate With move
-                board.AddPeice(col,row);                
+                row = GetRow(col,e.playerId);
+                board.boardState[col, row] =e. playerId;      //update Boardstate With move
+                board.AddPeice(col,row);
+                OnUpdate(this, board.getBoardImg());
                 turn *= -1;
             }
-            return win(playerId,col, row);
+            if(win(e.playerId,col, row)) OnWin(this, e.playerId.ToString()); // Publish Win Event
 
         }          
         private bool Move_Available(int col)
@@ -87,8 +90,7 @@ namespace ConnectFour
             }
             return false;
         }
-
-        //add to coloum  at found row return the row height of placed peice
+        
         private int GetRow(int col,int playerId)
         {
             for (int i = 0; i < 5; i++)
@@ -100,7 +102,6 @@ namespace ConnectFour
             }
             return 5;
         }
-        
 
         /*Check for Win 
          * 0 = no win
