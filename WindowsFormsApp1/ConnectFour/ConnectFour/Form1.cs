@@ -21,6 +21,7 @@ namespace ConnectFour
             
             InitializeComponent();
 
+            playerId = Properties.Settings.Default.userId;
             engine = new GameEngine(canvas.Size.Height, canvas.Size.Width);
             this.DoubleBuffered = true;
             //this.Paint += new PaintEventHandler(GameUpdate);  // subscribe to the form paint event and run our GameUpdate
@@ -62,7 +63,8 @@ namespace ConnectFour
                         //display Info on chat window....
             ChatScreen.Text = "mouse x = " + x + " Mouse y = " + y+ "\nColumn number: " + col + "\tRow number: " + row+"\n "
                 +"Player turn = "+engine.turn;
-            //Call for player Peice to hover at mouse
+            //Call for player Peice to hover at mouse            
+            //canvas.Image.Dispose();
             canvas.Image = engine.Hover(Properties.Settings.Default.userId, x, y);
         }
 
@@ -93,11 +95,6 @@ namespace ConnectFour
         {
             engine.reset();
             canvas.Image = engine.UpdateCanvas();
-        }
-
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            engine.Dispose();
         }
 
         private void Move_Mouse(object sender, MouseEventArgs e)

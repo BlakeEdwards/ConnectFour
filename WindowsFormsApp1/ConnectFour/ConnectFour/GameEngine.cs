@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ConnectFour
 {
-    class GameEngine: IDisposable
+    class GameEngine
     {
         //public event EventHandler<MultipleOfFiveEventArgs> OnMultipleOfFiveReached;
         public event EventHandler<Bitmap> OnUpdate;        // define an event
@@ -76,7 +76,8 @@ namespace ConnectFour
                 row = GetRow(col,e.playerId);
                 board.boardState[col, row] =e. playerId;      //update Boardstate With move
                 board.AddPeice(col,row);
-                OnUpdate(this, board.getBoardImg());
+                //OnUpdate(this, board.getBoardImg());
+                OnUpdate?.Invoke(this, board.getBoardImg());
                 turn *= -1;
             }
             if(win(e.playerId,col, row)) OnWin(this, e.playerId.ToString()); // Publish Win Event
@@ -203,37 +204,11 @@ namespace ConnectFour
         public void reset()
         {
             int h = board.getHieght();
-            int w = board.getWidth();
-            board.Dispose();
+            int w = board.getWidth();            
             board = new Board(h, w);
         }
         //clean up
-        private bool disposed = false;        
-
-        public void Dispose()
-        {
-
-            if (!disposed)
-            {
-                // Dispose of resources held by this instance.
-                Dispose(true);
-            }
-            GC.SuppressFinalize(this);
-        }
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposed)
-            {
-
-                board.Dispose();                
-                disposed = true;
-                // Suppress finalization of this disposed instance.
-                if (disposing)
-                {
-                    GC.SuppressFinalize(this);
-                }
-            }
-        }
+   
 
     }
 
