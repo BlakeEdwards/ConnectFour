@@ -28,10 +28,11 @@ namespace ConnectFour
             bitMapHieght = hieght;
             bitMapWidth = width;
             pad = 5;                // coishening for board spacing
-            DrawArea = new Bitmap(bitMapWidth, bitMapHieght);
+            DrawArea = new Bitmap(bitMapWidth, bitMapHieght);            
 
             radius = (bitMapHieght - (pad * 8)) / 7;   // although we only have 6 vertical slots the extra is for animation
             // the across the board we need to pad 8 gaps one in between each Column including the walls
+            DrawBoard();
         }
 
         // ToDo
@@ -149,6 +150,8 @@ namespace ConnectFour
         }
         public int getHieght() => bitMapHieght;
         public int getWidth() => bitMapWidth;
-        
+
+        public Bitmap GetImg() => DrawArea;
+
     }
 }

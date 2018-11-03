@@ -17,8 +17,7 @@ namespace ConnectFour
         public int Width { private get; set; }
         public int turn;
         public bool breaking;
-        Board board;
-        //int[,] boardState;
+        private Board board;
 
         public GameEngine(int hieght,int width)
         {
@@ -26,41 +25,33 @@ namespace ConnectFour
             Height = hieght;
             Width = width;
             board = new Board(Height, Width);
+            OnUpdate?.Invoke(this, board.getBoardImg());
             breaking = false;
         }
 
-        public Bitmap UpdateCanvas()
-        {
-            return board.DrawBoard();
-            //onUpdate(this, new updateBoardArgs(board.DrawBoard()));
-        }    
-        //{ OnMultipleOfFiveReached(this, new MultipleOfFiveEventArgs(iSum));
         //Player Peice Hovering
-        public Bitmap Hover(int playerId , int x, int y)
+        public void Hover(int playerId , int x, int y)
         {
             if (Properties.Settings.Default.userId == turn)
             {
+                // get col number
                 int col = board.getColumnNumber(x);
                 //bound Col 0-6
                 if (col > 6) col = 6;
                 if (col < 0) col = 0;
-                if (!Move_Available(col)) return board.getBoardImg();
+                if (!Move_Available(col)) return;
+
                 int row = Hover_Height(col);
-                return board.playerHover(playerId, col, row);
+                lock (board)        // LockBoard while in use
+                {
+                    
+                    OnUpdate?.Invoke(this, board.playerHover(playerId, col, row));
+                }
+                return;
             }
-            else return board.getBoardImg();
-
+            else return; ;
         }
-        private int Hover_Height(int col)
-        {
-            for (int i = 0; i < 5; i++)
-            {
-                if (board.boardState[col, i+1] != 0)
-                    return i+1;
-            }
-            return 6;
-        }
-
+        public void clearHove(object sender, EventArgs e) => OnUpdate?.Invoke(this, board.getBoardImg());
         //Making a Move
         public void Move(object sender, CanvasClickedArgs e)
         {
@@ -74,15 +65,36 @@ namespace ConnectFour
             else
             {
                 row = GetRow(col,e.playerId);
-                board.boardState[col, row] =e. playerId;      //update Boardstate With move
-                board.AddPeice(col,row);
-                //OnUpdate(this, board.getBoardImg());
-                OnUpdate?.Invoke(this, board.getBoardImg());
+                lock (board)        // Lock Board while in use
+                {
+                    board.boardState[col, row] = e.playerId;      //update Boardstate With move
+                    board.AddPeice(col, row);
+                    //OnUpdate(this, board.getBoardImg());
+                    OnUpdate?.Invoke(this, board.getBoardImg());
+                }
                 turn *= -1;
             }
             if(win(e.playerId,col, row)) OnWin(this, e.playerId.ToString()); // Publish Win Event
 
         }          
+        public void reset()
+        {
+            int h = board.getHieght();
+            int w = board.getWidth();            
+            board = new Board(h, w);
+            OnUpdate?.Invoke(this, board.getBoardImg());
+        }
+        
+        // Helper Classes
+        private int Hover_Height(int col)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                if (board.boardState[col, i+1] != 0)
+                    return i+1;
+            }
+            return 6;
+        }
         private bool Move_Available(int col)
         {            
             for (int i = 0; i < 6; i++)
@@ -91,7 +103,6 @@ namespace ConnectFour
             }
             return false;
         }
-        
         private int GetRow(int col,int playerId)
         {
             for (int i = 0; i < 5; i++)
@@ -200,15 +211,6 @@ namespace ConnectFour
             while (!Move_Available(num));
         return num* (Width / 7);
     }
-
-        public void reset()
-        {
-            int h = board.getHieght();
-            int w = board.getWidth();            
-            board = new Board(h, w);
-        }
-        //clean up
-   
 
     }
 

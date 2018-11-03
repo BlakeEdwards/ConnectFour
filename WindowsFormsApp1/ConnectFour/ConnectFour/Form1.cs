@@ -27,18 +27,14 @@ namespace ConnectFour
             //this.Paint += new PaintEventHandler(GameUpdate);  // subscribe to the form paint event and run our GameUpdate
             canvas.MouseMove += new MouseEventHandler(Move_Mouse);      // update mouse x/y.
             canvas.MouseMove += new MouseEventHandler(PlayerHover);
-            canvas.MouseLeave += new EventHandler(ClearHover);
-
+            canvas.MouseLeave += new EventHandler(engine.clearHove); 
+            
             this.OnMoveMade += new EventHandler<CanvasClickedArgs>(engine.Move);
             engine.OnWin += new EventHandler<string>(Winner);
             engine.OnUpdate += new EventHandler<Bitmap>(SetCanvas);
-            canvas.Image = engine.UpdateCanvas();
+            engine.reset();
         }
 
-        //private void GameUpdate(object sender, PaintEventArgs e)
-        //{            
-        // //   canvas.Image = gameBoard.DrawBoard();
-        //}
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
             NewGame form2 = new NewGame();
@@ -51,10 +47,6 @@ namespace ConnectFour
             this.Invalidate();
         }
 
-        private void ClearHover(object sender, EventArgs e)
-        {
-               canvas.Image = engine.UpdateCanvas();
-        }
         private void PlayerHover(object sender, EventArgs e)
         {
             // calculate col and row
@@ -65,7 +57,7 @@ namespace ConnectFour
                 +"Player turn = "+engine.turn;
             //Call for player Peice to hover at mouse            
             //canvas.Image.Dispose();
-            canvas.Image = engine.Hover(Properties.Settings.Default.userId, x, y);
+            engine.Hover(Properties.Settings.Default.userId, x, y);
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -94,7 +86,6 @@ namespace ConnectFour
         private void resetBoard(object sender, EventArgs e)
         {
             engine.reset();
-            canvas.Image = engine.UpdateCanvas();
         }
 
         private void Move_Mouse(object sender, MouseEventArgs e)
