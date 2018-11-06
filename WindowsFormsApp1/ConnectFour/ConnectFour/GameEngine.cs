@@ -13,20 +13,19 @@ namespace ConnectFour
         public event EventHandler<Bitmap> OnUpdate;        // define an event
         public event EventHandler<MovedMadeArgs> OnMoveMade;
         public event EventHandler<string> OnWin;
-        public int Height { private get; set; }
-        public int Width { private get; set; }
+        private int Width;
+        // Todo make turn private and clean up
         public int turn;
-        public bool breaking;
+        public bool gameActive { get; private set; }
         private Board board;
 
         public GameEngine(int hieght,int width)
         {
             turn = 1;
-            Height = hieght;
             Width = width;
-            board = new Board(Height, Width);
+            gameActive = true;
+            board = new Board(hieght, Width);
             OnUpdate?.Invoke(this, board.getBoardImg());
-            breaking = false;
         }
 
         //Player Peice Hovering
@@ -74,7 +73,11 @@ namespace ConnectFour
                 }
                 turn *= -1;
             }
-            if(win(e.playerId,col, row)) OnWin(this, e.playerId.ToString()); // Publish Win Event
+            if (win(e.playerId, col, row))
+            {
+                gameActive = false;
+                OnWin?.Invoke(this, e.playerId.ToString()); // Publish Win Event
+            }
 
         }          
         public void reset()
@@ -120,7 +123,8 @@ namespace ConnectFour
          * 1 = player 1
          * -1 = player 2
          */        
-        public bool win(int playerId,int col,int row)
+
+        private bool win(int playerId,int col,int row)
         {            
             if (vert_win(playerId,col)) return true;
             if (horz_win(playerId, col, row)) return true;
@@ -200,7 +204,7 @@ namespace ConnectFour
             return false;            
         }
 
-        public int Get_move()
+        private int Get_move()
     {
         Random rnd = new Random();
             int num;

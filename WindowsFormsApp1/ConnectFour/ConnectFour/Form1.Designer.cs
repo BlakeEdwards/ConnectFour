@@ -53,7 +53,6 @@
             this.canvas.Size = new System.Drawing.Size(600, 600);
             this.canvas.TabIndex = 0;
             this.canvas.TabStop = false;
-            this.canvas.Click += new System.EventHandler(this.canvas_Click);
             // 
             // menuStrip1
             // 

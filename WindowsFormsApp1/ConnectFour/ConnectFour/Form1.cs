@@ -17,8 +17,7 @@ namespace ConnectFour
         private int x, y, playerId;
         private event EventHandler<CanvasClickedArgs> OnMoveMade;
         public Form1()
-        {
-            
+        {            
             InitializeComponent();
 
             playerId = Properties.Settings.Default.userId;
@@ -27,8 +26,9 @@ namespace ConnectFour
             //this.Paint += new PaintEventHandler(GameUpdate);  // subscribe to the form paint event and run our GameUpdate
             canvas.MouseMove += new MouseEventHandler(Move_Mouse);      // update mouse x/y.
             canvas.MouseMove += new MouseEventHandler(PlayerHover);
-            canvas.MouseLeave += new EventHandler(engine.clearHove); 
-            
+            canvas.MouseLeave += new EventHandler(engine.clearHove);
+            canvas.Click += new EventHandler(this.canvas_Click);
+
             this.OnMoveMade += new EventHandler<CanvasClickedArgs>(engine.Move);
             engine.OnWin += new EventHandler<string>(Winner);
             engine.OnUpdate += new EventHandler<Bitmap>(SetCanvas);

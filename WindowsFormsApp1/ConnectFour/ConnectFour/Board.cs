@@ -32,49 +32,28 @@ namespace ConnectFour
 
             radius = (bitMapHieght - (pad * 8)) / 7;   // although we only have 6 vertical slots the extra is for animation
             // the across the board we need to pad 8 gaps one in between each Column including the walls
-            DrawBoard();
+            LoadBoardImg(boardState);
         }
 
-        // ToDo
-        private int getColumHieght(int col)
-        {
-            return 0;
-        }
         //public Bitmap DrawBoard(int[][] board)
-
-        // ToDo Clean up No need to place player peices here unless loading old game
-        // ToDo  move this entire code into a load game method
-        public Bitmap DrawBoard()
+        private Bitmap LoadBoardImg(int[,] board)
         {
             // each square size
             //Bitmap DrawArea = new Bitmap(bitMapWidth, bitMapHieght);
 
             Graphics g = Graphics.FromImage(DrawArea);
+            // Background 
             g.FillRectangle(new SolidBrush(backColor), 0, 0, bitMapHieght, bitMapWidth);
+            // Board
             g.FillRectangle(new SolidBrush(boardColor), 0, radius + (pad / 2), bitMapWidth, radius * 7);
-            Brush brush;
 
+            Brush brush = new SolidBrush(backColor);
+            // create holes to look like a board
             for (int y = 0; y < 6; y++)
             {
                 for (int x = 0; x < 7; x++)
                 {
-                    switch (boardState[x, y])
-                    {
-                        case 1:
-                            brush = new SolidBrush(player1Color);
-                            break;
-                        case -1:
-                            brush = new SolidBrush(player2Color);
-                            break;
-                        default:
-                            brush = new SolidBrush(backColor);
-                            break;
-                    }
-                    g.FillEllipse(brush,
-                        x * radius + (pad * x) + pad,
-                        y * radius + (pad * (y + 1)) + radius,
-                        radius, radius
-                        );
+                    AddPeice(x, y);
                 }
             }
             g.Dispose();
