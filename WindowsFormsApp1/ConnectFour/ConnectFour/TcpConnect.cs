@@ -7,14 +7,14 @@ using System.Threading;
 namespace ConnectFour
 {
 
-    class TcpConnect 
+    class TcpConnect : IDisposable
     {
         private int port;
         private string ip;
         private bool isServer;
         private bool otherSideClosing = false;
         private TcpClient client;
-        
+        private TcpListener listener;
         private string recieveData, sendData;
         NetworkStream netStream;
         byte[] bytes = new Byte[1024];
@@ -44,25 +44,29 @@ namespace ConnectFour
         /// </summary>
         public void Start()
         {
-            OnChatRecieved.Invoke(this, "Connecting");
+            
             networkActive = true;
             if (isServer)
             {
                 try
-                {   
+                {
+                    OnChatRecieved?.Invoke(this, "Waiting client to Connect");
                     // Server Machine
                     // Id = 1
-                    TcpListener listener = new TcpListener(IPAddress.Any, port);
+                    listener = new TcpListener(IPAddress.Any, port);
                     listener.Start();
                     client = listener.AcceptTcpClient();
                     OnChatRecieved?.Invoke(this, "server Created");
                     netStream = client.GetStream();
                     listener.Stop();
+                    
                     // Set Id of this Machine
                     Properties.Settings.Default.userId = 1;
                 }
                 catch(Exception e)
                 {
+                    OnChatRecieved?.Invoke(this, "Connecting Stoped");
+                    try { listener.Stop(); } catch { }
                     OnError?.Invoke(this, e.Message);
                     networkActive = false;
                     otherSideClosing = true;
@@ -161,11 +165,9 @@ namespace ConnectFour
             cmd = cmd.Replace("~", "");
             string[] chatcheck = cmd.Split('|');
             // define end of command with ~ delimiter
-            lock (sendData)
-            {
+            
                 sendData += cmd + "~";
                 if (chatcheck[0] == "Chat") { Execute_Commands(cmd, "Sent: "); }
-            }
         }
         private void Execute_Commands(string data, string pretext)
         {
@@ -241,6 +243,19 @@ namespace ConnectFour
             {
                 OnError(this, "Network is Currently Running");
             }
+        }
+
+        public void Dispose()
+        {
+            try
+            {
+                listener.Stop();
+                client.Dispose();                
+                netStream.Dispose();
+            }
+            catch (Exception e){ }
+            GC.SuppressFinalize(this);
+
         }
     }
 }

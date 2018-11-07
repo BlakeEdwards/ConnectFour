@@ -12,8 +12,8 @@ namespace ConnectFour
 {
     public partial class OptionsForm : Form
     {
-        string userName;
-        Color oplay1Col, oplay2Col, obGCol, oboardCol;
+        private string userName;
+        private Color oplay1Col, oplay2Col, obGCol, oboardCol;
         public OptionsForm()
         {
             InitializeComponent();
@@ -59,6 +59,11 @@ namespace ConnectFour
                 bGCol.BackColor = colorDialog1.Color;
                 obGCol = colorDialog1.Color;
             }
+        }
+
+        private void OptionsForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            colorDialog1.Dispose();
         }
 
         private void boardCol_Click(object sender, EventArgs e)

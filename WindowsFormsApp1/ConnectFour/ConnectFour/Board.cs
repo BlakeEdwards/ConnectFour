@@ -9,12 +9,15 @@ using System.Drawing.Drawing2D;
 
 namespace ConnectFour
 {
-    class Board 
+    class Board  :IDisposable
     {
         public int col { get; set; }
-        public int[,] boardState { get; set; }        
-        public static int nColumns { get { return 7; }}
-        public static int nRows  { get { return 6; }}        
+        public int[,] boardState { get; set; }
+        public int MyProperty { get; set; }
+        private static int columns = 7;
+        private static int rows= 6;
+        public static int nColumns { get { return columns; } }
+        public static int nRows  { get { return rows; }}        
         private Color player1Color = Color.Red;
         private Color player2Color = Color.Yellow;
         private Color backColor ;
@@ -25,7 +28,8 @@ namespace ConnectFour
         private int pad;
         // Display board
         public Board(int hieght, int width, int[,] board)
-        {            
+        {
+            try { DrawArea.Dispose(); } catch { }
             //load Settings
             player1Color = Properties.Settings.Default.play1Col;
             player2Color = Properties.Settings.Default.play2Col;           
@@ -155,5 +159,9 @@ namespace ConnectFour
 
         public Bitmap GetImg() => DrawArea;
 
+        public void Dispose()
+        {
+            DrawArea.Dispose();
+        }
     }
 }

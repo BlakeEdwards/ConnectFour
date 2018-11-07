@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace ConnectFour
 {
-    public partial class Form1 : Form
+    public partial class Form1 : Form 
     {            
         //Board gameBoard;
         GameEngine engine;
@@ -31,16 +31,18 @@ namespace ConnectFour
             this.DoubleBuffered = true;
             //this.Paint += new PaintEventHandler(GameUpdate);  // subscribe to the form paint event and run our GameUpdate
             //canvas.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Move_Mouse);
-
+            canvas.Enabled = false;
             // form Subsciptions
             canvas.MouseMove += new MouseEventHandler(Move_Mouse);
             canvas.MouseMove += new MouseEventHandler(engine.Hover);
             canvas.MouseLeave += new EventHandler(engine.clearHove);
-            OnMoveMade += new EventHandler<CanvasClickedArgs>(engine.gameBoard_Clicked);
+            OnAiChecked += new EventHandler<bool>(engine.SetAi);
+            OnMoveMade += new EventHandler<CanvasClickedArgs>(engine.gameBoard_Clicked);            
+
             // engine Subsciptions
             engine.OnWin += new EventHandler<string>(Winner);
             engine.OnUpdate += new EventHandler<Bitmap>(SetCanvas);
-            engine.OnMoveMade += new EventHandler<MoveArgs>(socket.localMoveMade);
+            engine.OnMoveMade += new EventHandler<MoveArgs>(socket.localMoveMade);            
             engine.reset();
 
             //netWork Subsciptions
@@ -66,7 +68,7 @@ namespace ConnectFour
         {
             System.Windows.Forms.MessageBox.Show("WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! ");
         }
-
+        
         private void ResetBoard(object sender, EventArgs e)
         {
             engine.reset();
@@ -141,8 +143,14 @@ namespace ConnectFour
             thread.Start();
         }
         private void disconectButton_Click(object sender, EventArgs e)
-        {
+        {            
             socket.networkActive = false;
+            if (thread.IsAlive)
+            {
+                socket.Dispose();
+                Thread.Sleep(10);
+                thread.Abort();
+            }
         }
 
 
@@ -153,16 +161,59 @@ namespace ConnectFour
         }
         private void Form1_FormClosing(object sender, FormClosingEventArgs evnt)
         {
+            
             //Todo Save Board State if client is server 
             socket.OnError -= new EventHandler<string>(ErrorBox);            
             socket.OnChatRecieved -= new EventHandler<string>(chatRecieved);
             socket.OnMoveRecieved -= new EventHandler<MoveArgs>(engine.Move);
             try
             {
-                socket.networkActive = false;
+                socket.networkActive = false;                
             }
             catch (Exception e)
             { ErrorBox(this, e.ToString()); }
+            try
+            {
+                if (thread.IsAlive)
+                {
+                    socket.Dispose();
+                    Thread.Sleep(10);
+                    thread.Abort();
+                }
+            }
+            catch { }
+        }
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            socket.Dispose();
+            engine.Dispose();
+
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+
+
+        private void aiCheckBox_CheckedChanged(object sender, EventArgs e)
+        {            
+            OnAiChecked(this, aiCheckBox.Checked);
+        }
+
+        private void saveGameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            saveFileDialog1.AddExtension = true;
+            //saveFileDialog1.
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                
+            }
         }
 
         private void testButton_Click(object sender, EventArgs e)
@@ -171,5 +222,6 @@ namespace ConnectFour
             int n = rnd.Next(0, 7);
             engine.Move(this, new MoveArgs(n, engine.turn));
         }
+
     }
 }

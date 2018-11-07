@@ -169,6 +169,7 @@
             this.Name = "OptionsForm";
             this.ShowIcon = false;
             this.Text = "Custom Settings";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OptionsForm_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.play1Col)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.bGCol)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.play2Col)).EndInit();

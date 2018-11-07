@@ -8,12 +8,11 @@ using System.Windows.Forms;
 
 namespace ConnectFour
 {
-    class GameEngine
+    class GameEngine: IDisposable
     {
         //public event EventHandler<MultipleOfFiveEventArgs> OnMultipleOfFiveReached;
         public event EventHandler<Bitmap> OnUpdate;        // define an event
-        public event EventHandler<MoveArgs> OnMoveMade;
-        
+        public event EventHandler<MoveArgs> OnMoveMade;        
         public event EventHandler<string> OnWin;
         private int Width;
         // Todo make turn private and clean up
@@ -248,6 +247,7 @@ namespace ConnectFour
             return false;            
         }
 
+        // Getting Ai Move
         private int Get_move()
         {
             Random rnd = new Random();
@@ -257,17 +257,22 @@ namespace ConnectFour
                 num = rnd.Next(7);
             }
             while (!Move_Available(num));
-            return num * (Width / 7);
+            return num;
         }
         private void AiPlayer()
-        {
-            // Todo impliment Ai logic    
+        {                       
+            Move(this, new MoveArgs(Get_move(), Properties.Settings.Default.userId));                
         }
         public void SetAi(object obj,bool value)
         {
             Ai = value;
+            if(Ai && turn == Properties.Settings.Default.userId) { AiPlayer(); }
         }
 
+        public void Dispose()
+        {
+            board.Dispose();
+        }
     }
 
 }

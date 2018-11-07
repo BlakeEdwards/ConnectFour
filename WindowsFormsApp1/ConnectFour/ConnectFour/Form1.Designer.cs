@@ -1,24 +1,15 @@
-﻿namespace ConnectFour
+﻿using System;
+
+namespace ConnectFour
 {
-    partial class Form1
+    partial class Form1 
     {
         /// <summary>
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {                
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+
 
         #region Windows Form Designer generated code
 
@@ -37,7 +28,7 @@
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.messageInput = new System.Windows.Forms.TextBox();
             this.ChatScreen = new System.Windows.Forms.RichTextBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.aiCheckBox = new System.Windows.Forms.CheckBox();
             this.button1 = new System.Windows.Forms.Button();
             this.connectButton = new System.Windows.Forms.Button();
             this.ipInput = new System.Windows.Forms.TextBox();
@@ -47,6 +38,11 @@
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.testButton = new System.Windows.Forms.Button();
             this.SendMsgButton = new System.Windows.Forms.Button();
+            this.saveGameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadGameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             ((System.ComponentModel.ISupportInitialize)(this.canvas)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -78,7 +74,9 @@
             // gameToolStripMenuItem
             // 
             this.gameToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.newToolStripMenuItem});
+            this.newToolStripMenuItem,
+            this.saveGameToolStripMenuItem,
+            this.loadGameToolStripMenuItem});
             this.gameToolStripMenuItem.Name = "gameToolStripMenuItem";
             this.gameToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.G)));
             this.gameToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
@@ -88,7 +86,7 @@
             // 
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
             this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.newToolStripMenuItem.Text = "New";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
@@ -126,17 +124,16 @@
             this.ChatScreen.TabStop = false;
             this.ChatScreen.Text = "";
             // 
-            // checkBox1
+            // aiCheckBox
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Checked = true;
-            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox1.Location = new System.Drawing.Point(12, 27);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(91, 17);
-            this.checkBox1.TabIndex = 4;
-            this.checkBox1.Text = "Enable Player";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.aiCheckBox.AutoSize = true;
+            this.aiCheckBox.Location = new System.Drawing.Point(12, 27);
+            this.aiCheckBox.Name = "aiCheckBox";
+            this.aiCheckBox.Size = new System.Drawing.Size(68, 17);
+            this.aiCheckBox.TabIndex = 4;
+            this.aiCheckBox.Text = "AI Player";
+            this.aiCheckBox.UseVisualStyleBackColor = true;
+            this.aiCheckBox.CheckedChanged += new System.EventHandler(this.aiCheckBox_CheckedChanged);
             // 
             // button1
             // 
@@ -215,6 +212,23 @@
             this.SendMsgButton.Text = "Send Message";
             this.SendMsgButton.UseVisualStyleBackColor = true;
             // 
+            // saveGameToolStripMenuItem
+            // 
+            this.saveGameToolStripMenuItem.Name = "saveGameToolStripMenuItem";
+            this.saveGameToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveGameToolStripMenuItem.Text = "Save Game";
+            this.saveGameToolStripMenuItem.Click += new System.EventHandler(this.saveGameToolStripMenuItem_Click);
+            // 
+            // loadGameToolStripMenuItem
+            // 
+            this.loadGameToolStripMenuItem.Name = "loadGameToolStripMenuItem";
+            this.loadGameToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadGameToolStripMenuItem.Text = "Load Game";
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -228,7 +242,7 @@
             this.Controls.Add(this.ipInput);
             this.Controls.Add(this.connectButton);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.checkBox1);
+            this.Controls.Add(this.aiCheckBox);
             this.Controls.Add(this.ChatScreen);
             this.Controls.Add(this.messageInput);
             this.Controls.Add(this.canvas);
@@ -260,7 +274,7 @@
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.TextBox messageInput;
         private System.Windows.Forms.RichTextBox ChatScreen;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox aiCheckBox;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button connectButton;
         private System.Windows.Forms.TextBox ipInput;
@@ -270,6 +284,11 @@
         private System.Windows.Forms.ColorDialog colorDialog1;
         private System.Windows.Forms.Button testButton;
         private System.Windows.Forms.Button SendMsgButton;
+        private System.Windows.Forms.ToolStripMenuItem saveGameToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadGameToolStripMenuItem;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
     }
 }
 
