@@ -15,8 +15,8 @@ namespace ConnectFour
         public int[,] boardState { get; set; }
         private Color player1Color = Color.Red;
         private Color player2Color = Color.Yellow;
-        private Color backColor = Properties.Settings.Default.backGroundColor;
-        private Color boardColor = Properties.Settings.Default.boardColor;
+        private Color backColor ;
+        private Color boardColor ;
         private int bitMapHieght, bitMapWidth;
         private int radius;
         private Bitmap DrawArea;
@@ -24,19 +24,18 @@ namespace ConnectFour
         // Display board
         public Board(int hieght, int width)
         {
-            if (Properties.Settings.Default.userId == 1)
-            {
-                player1Color = Properties.Settings.Default.myColor;
-                player2Color = Properties.Settings.Default.theirColor;
-            }else
-            {
-                player1Color = Properties.Settings.Default.theirColor;
-                player2Color = Properties.Settings.Default.myColor;
-            }
+            //load Settings
+            player1Color = Properties.Settings.Default.play1Col;
+            player2Color = Properties.Settings.Default.play2Col;           
+            boardColor = Properties.Settings.Default.boardColor;
+            backColor = Properties.Settings.Default.backGroundColor;
+
+            // create board
             boardState = new int[7, 6];     // board is 7 across and 6 high
             bitMapHieght = hieght;
             bitMapWidth = width;
             pad = 5;                // coishening for board spacing
+            //create  Image
             DrawArea = new Bitmap(bitMapWidth, bitMapHieght);            
 
             radius = (bitMapHieght - (pad * 8)) / 7;   // although we only have 6 vertical slots the extra is for animation

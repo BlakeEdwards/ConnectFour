@@ -45,6 +45,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.disconectButton = new System.Windows.Forms.Button();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
+            this.testButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.canvas)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -58,6 +59,7 @@
             this.canvas.Size = new System.Drawing.Size(600, 600);
             this.canvas.TabIndex = 0;
             this.canvas.TabStop = false;
+            this.canvas.Click += new System.EventHandler(this.canvas_Click);
             // 
             // menuStrip1
             // 
@@ -93,6 +95,7 @@
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.optionsToolStripMenuItem.Text = "Options";
+            this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -186,11 +189,22 @@
             this.disconectButton.Text = "Disconect";
             this.disconectButton.UseVisualStyleBackColor = true;
             // 
+            // testButton
+            // 
+            this.testButton.Location = new System.Drawing.Point(802, 139);
+            this.testButton.Name = "testButton";
+            this.testButton.Size = new System.Drawing.Size(75, 23);
+            this.testButton.TabIndex = 12;
+            this.testButton.Text = "Test";
+            this.testButton.UseVisualStyleBackColor = true;
+            this.testButton.Click += new System.EventHandler(this.testButton_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(905, 661);
+            this.Controls.Add(this.testButton);
             this.Controls.Add(this.disconectButton);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.clientCheckBox);
@@ -233,6 +247,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button disconectButton;
         private System.Windows.Forms.ColorDialog colorDialog1;
+        private System.Windows.Forms.Button testButton;
     }
 }
 

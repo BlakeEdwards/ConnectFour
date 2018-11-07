@@ -50,24 +50,24 @@ namespace ConnectFour.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Red")]
-        public global::System.Drawing.Color myColor {
+        public global::System.Drawing.Color play1Col {
             get {
-                return ((global::System.Drawing.Color)(this["myColor"]));
+                return ((global::System.Drawing.Color)(this["play1Col"]));
             }
             set {
-                this["myColor"] = value;
+                this["play1Col"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Yellow")]
-        public global::System.Drawing.Color theirColor {
+        public global::System.Drawing.Color play2Col {
             get {
-                return ((global::System.Drawing.Color)(this["theirColor"]));
+                return ((global::System.Drawing.Color)(this["play2Col"]));
             }
             set {
-                this["theirColor"] = value;
+                this["play2Col"] = value;
             }
         }
         

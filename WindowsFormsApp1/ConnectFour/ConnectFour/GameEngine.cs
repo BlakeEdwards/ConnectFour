@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace ConnectFour
 {
@@ -11,16 +12,19 @@ namespace ConnectFour
     {
         //public event EventHandler<MultipleOfFiveEventArgs> OnMultipleOfFiveReached;
         public event EventHandler<Bitmap> OnUpdate;        // define an event
-        public event EventHandler<MovedMadeArgs> OnMoveMade;
+        public event EventHandler<MoveArgs> OnMoveMade;
+        
         public event EventHandler<string> OnWin;
         private int Width;
         // Todo make turn private and clean up
-        public int turn;
         public bool gameActive { get; private set; }
+        public bool Ai { get; set; }
+        public int turn;
         private Board board;
 
         public GameEngine(int hieght,int width)
         {
+            Ai = true;
             turn = 1;
             Width = width;
             // Todo use this to test if game is active and enable /diable engine.Onupdate.
@@ -37,12 +41,12 @@ namespace ConnectFour
         /// <param name="playerId">player Id</param>
         /// <param name="x">Mouse x on Board</param>
         /// <param name="y">Mouse x on Board</param>
-        public void Hover(int playerId , int x, int y)
+        public void Hover(object obj, MouseEventArgs e)
         {
             if (Properties.Settings.Default.userId == turn)
             {
                 // get col number
-                int col = board.getColumnNumber(x);
+                int col = board.getColumnNumber(e.X);
                 //bound Col 0-6
                 if (col > 6) col = 6;
                 if (col < 0) col = 0;
@@ -52,7 +56,7 @@ namespace ConnectFour
                 lock (board)        // LockBoard while in use
                 {
                     
-                    OnUpdate?.Invoke(this, board.playerHover(playerId, col, row));
+                    OnUpdate?.Invoke(this, board.playerHover(Properties.Settings.Default.userId, col, row));
                 }
                 return;
             }
@@ -62,23 +66,32 @@ namespace ConnectFour
         internal void setTurn(object sender, int e)
         {
             turn = e;
+
         }
 
         public void clearHove(object sender, EventArgs e) => OnUpdate?.Invoke(this, board.getBoardImg());
         //Making a Move
-        public void Move(object sender, CanvasClickedArgs e)
-        {
-            
-            if (e.playerId != turn) return ;     // not players turn Return
+        public void gameBoard_Clicked(object sender, CanvasClickedArgs e)
+        {            
+            if (e.playerId != turn) return;     // not players turn Return
+            if (e.playerId != turn) return;     // not players turn Return
             int col = board.getColumnNumber(e.x);
             int row = board.getRowNumber(e.y);
             col = (col > 6) ? 6 : col;              // bound col so it can go over number of cols
+            this.Move(this, new MoveArgs(col, e.playerId));
+        }
+        public void Move(object sender, MoveArgs e)
+        {
+            
+            int col = e.col;
+            int playerId = e.playerId;
+            int row;
             //check a place is available in Coloum
             if (!Move_Available(col)) return; // Move Not Avaliable Return 
             else
             {
-                OnMoveMade(this, new MovedMadeArgs(col, Properties.Settings.Default.userId));
-                row = GetRow(col,e.playerId);
+                OnMoveMade?.Invoke(this, new MoveArgs(col, Properties.Settings.Default.userId));
+                row = GetRow(col,playerId);
                 lock (board)        // Lock Board while in use
                 {
                     board.boardState[col, row] = e.playerId;      //update Boardstate With move
@@ -87,6 +100,10 @@ namespace ConnectFour
                     OnUpdate?.Invoke(this, board.getBoardImg());
                 }
                 turn *= -1;
+                if (Ai && turn == Properties.Settings.Default.userId)
+                {
+                    AiPlayer();
+                }
             }
             if (win(e.playerId, col, row))
             {
@@ -94,7 +111,8 @@ namespace ConnectFour
                 OnWin?.Invoke(this, e.playerId.ToString()); // Publish Win Event
             }
 
-        }          
+        }
+
         public void reset()
         {
             int h = board.getHieght();
@@ -220,16 +238,24 @@ namespace ConnectFour
         }
 
         private int Get_move()
-    {
-        Random rnd = new Random();
+        {
+            Random rnd = new Random();
             int num;
             do
             {
                 num = rnd.Next(7);
             }
             while (!Move_Available(num));
-        return num* (Width / 7);
-    }
+            return num * (Width / 7);
+        }
+        private void AiPlayer()
+        {
+
+        }
+        public void SetAi(object obj,bool value)
+        {
+            Ai = value;
+        }
 
     }
 

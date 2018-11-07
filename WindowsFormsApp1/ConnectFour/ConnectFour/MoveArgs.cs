@@ -2,11 +2,11 @@
 
 namespace ConnectFour
 {
-    public class MovedMadeArgs : EventArgs        // define my event args
+    public class MoveArgs : EventArgs        // define my event args
     {
-        public MovedMadeArgs(int col,int playerId)
+        public MoveArgs(int col,int playerId)
         {
-            this.col = col;
+            this.col = col;            
             this.playerId = playerId;
         }
         public int col { get; set; }

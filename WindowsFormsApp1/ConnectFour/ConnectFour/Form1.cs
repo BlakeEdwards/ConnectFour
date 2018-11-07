@@ -18,7 +18,9 @@ namespace ConnectFour
         TcpConnect socket;
         Thread thread;
         private int x, y ;
+        // create Event Form Will Publish
         private event EventHandler<CanvasClickedArgs> OnMoveMade;
+        private event EventHandler<bool> OnAiChecked;
         public Form1()
         {            
             InitializeComponent();
@@ -28,12 +30,10 @@ namespace ConnectFour
             socket = new TcpConnect(4443);
             this.DoubleBuffered = true;
             //this.Paint += new PaintEventHandler(GameUpdate);  // subscribe to the form paint event and run our GameUpdate
-            canvas.MouseMove += new MouseEventHandler(Move_Mouse);      // update mouse x/y.
-            canvas.MouseMove += new MouseEventHandler(PlayerHover);
-            canvas.MouseLeave += new EventHandler(engine.clearHove);
-            canvas.Click += new EventHandler(this.canvas_Click);
-
-            this.OnMoveMade += new EventHandler<CanvasClickedArgs>(engine.Move);
+            //canvas.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Move_Mouse);
+            canvas.MouseMove += new System.Windows.Forms.MouseEventHandler(Move_Mouse);
+            canvas.MouseMove += new System.Windows.Forms.MouseEventHandler(engine.Hover);
+            OnMoveMade += new EventHandler<CanvasClickedArgs>(engine.gameBoard_Clicked);
             engine.OnWin += new EventHandler<string>(Winner);
             engine.OnUpdate += new EventHandler<Bitmap>(SetCanvas);
             engine.reset();
@@ -53,16 +53,11 @@ namespace ConnectFour
         {
             canvas.Image = img;
             this.Invalidate();
-        }
-
-        private void PlayerHover(object sender, EventArgs e)
-        {            
-            engine.Hover(Properties.Settings.Default.userId, x, y);
-        }        
-
+        }            
         private void canvas_Click(object sender, EventArgs e)
         {            
-            OnMoveMade(this,new CanvasClickedArgs(x, y, Properties.Settings.Default.userId));            
+            OnMoveMade(this,new CanvasClickedArgs(x, y, Properties.Settings.Default.userId));
+            //Properties.Settings.Default.userId *= -1;
         }
 
         private void Winner(object sender, string e)
@@ -120,7 +115,17 @@ namespace ConnectFour
             //Invalidate();
         }
 
+        private void testButton_Click(object sender, EventArgs e)
+        {
+            engine.Move(this, new MoveArgs(1, 1));
+            engine.Move(this, new MoveArgs(0, -1));
+        }
 
+        private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OptionsForm options = new OptionsForm();
+            options.Show();
+        }
 
         private void ErrorBox(object sender, string error)
         {

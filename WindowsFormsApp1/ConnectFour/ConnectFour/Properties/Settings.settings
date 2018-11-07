@@ -8,10 +8,10 @@
     <Setting Name="userName" Type="System.String" Scope="User">
       <Value Profile="(Default)">Bob</Value>
     </Setting>
-    <Setting Name="myColor" Type="System.Drawing.Color" Scope="User">
+    <Setting Name="play1Col" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">Red</Value>
     </Setting>
-    <Setting Name="theirColor" Type="System.Drawing.Color" Scope="User">
+    <Setting Name="play2Col" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">Yellow</Value>
     </Setting>
     <Setting Name="boardColor" Type="System.Drawing.Color" Scope="User">
