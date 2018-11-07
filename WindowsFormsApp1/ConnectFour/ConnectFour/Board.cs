@@ -15,8 +15,8 @@ namespace ConnectFour
         public int[,] boardState { get; set; }
         private Color player1Color = Color.Red;
         private Color player2Color = Color.Yellow;
-        private Color backColor = SystemColors.ActiveBorder;
-        private Color boardColor = Color.Blue;
+        private Color backColor = Properties.Settings.Default.backGroundColor;
+        private Color boardColor = Properties.Settings.Default.boardColor;
         private int bitMapHieght, bitMapWidth;
         private int radius;
         private Bitmap DrawArea;
@@ -24,6 +24,15 @@ namespace ConnectFour
         // Display board
         public Board(int hieght, int width)
         {
+            if (Properties.Settings.Default.userId == 1)
+            {
+                player1Color = Properties.Settings.Default.myColor;
+                player2Color = Properties.Settings.Default.theirColor;
+            }else
+            {
+                player1Color = Properties.Settings.Default.theirColor;
+                player2Color = Properties.Settings.Default.myColor;
+            }
             boardState = new int[7, 6];     // board is 7 across and 6 high
             bitMapHieght = hieght;
             bitMapWidth = width;

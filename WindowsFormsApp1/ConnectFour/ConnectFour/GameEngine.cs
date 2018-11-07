@@ -23,12 +23,20 @@ namespace ConnectFour
         {
             turn = 1;
             Width = width;
+            // Todo use this to test if game is active and enable /diable engine.Onupdate.
             gameActive = true;
             board = new Board(hieght, Width);
             OnUpdate?.Invoke(this, board.getBoardImg());
         }
 
         //Player Peice Hovering
+        /// <summary>
+        /// Will update a board img with player peice hoving at mouse (x,y)
+        /// subcribe to OnUpdate to recieve img
+        /// </summary>
+        /// <param name="playerId">player Id</param>
+        /// <param name="x">Mouse x on Board</param>
+        /// <param name="y">Mouse x on Board</param>
         public void Hover(int playerId , int x, int y)
         {
             if (Properties.Settings.Default.userId == turn)
@@ -50,6 +58,12 @@ namespace ConnectFour
             }
             else return; ;
         }
+
+        internal void setTurn(object sender, int e)
+        {
+            turn = e;
+        }
+
         public void clearHove(object sender, EventArgs e) => OnUpdate?.Invoke(this, board.getBoardImg());
         //Making a Move
         public void Move(object sender, CanvasClickedArgs e)
@@ -63,6 +77,7 @@ namespace ConnectFour
             if (!Move_Available(col)) return; // Move Not Avaliable Return 
             else
             {
+                OnMoveMade(this, new MovedMadeArgs(col, Properties.Settings.Default.userId));
                 row = GetRow(col,e.playerId);
                 lock (board)        // Lock Board while in use
                 {

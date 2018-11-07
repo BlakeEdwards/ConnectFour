@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -14,14 +15,17 @@ namespace ConnectFour
     {            
         //Board gameBoard;
         GameEngine engine;
-        private int x, y, playerId;
+        TcpConnect socket;
+        Thread thread;
+        private int x, y ;
         private event EventHandler<CanvasClickedArgs> OnMoveMade;
         public Form1()
         {            
             InitializeComponent();
 
-            playerId = Properties.Settings.Default.userId;
+            
             engine = new GameEngine(canvas.Size.Height, canvas.Size.Width);
+            socket = new TcpConnect(4443);
             this.DoubleBuffered = true;
             //this.Paint += new PaintEventHandler(GameUpdate);  // subscribe to the form paint event and run our GameUpdate
             canvas.MouseMove += new MouseEventHandler(Move_Mouse);      // update mouse x/y.
@@ -33,7 +37,11 @@ namespace ConnectFour
             engine.OnWin += new EventHandler<string>(Winner);
             engine.OnUpdate += new EventHandler<Bitmap>(SetCanvas);
             engine.reset();
+
+            socket.OnError += new EventHandler<string>(ErrorBox);
+            socket.OnSetTurn += new EventHandler<int>(engine.setTurn);
         }
+
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -48,42 +56,58 @@ namespace ConnectFour
         }
 
         private void PlayerHover(object sender, EventArgs e)
-        {
-            // calculate col and row
-            int col = x / (canvas.Width / 7), row = (y / (canvas.Height / 7)) - 1;
-            col = (col > 6) ? col = 6 : col;
-                        //display Info on chat window....
-            ChatScreen.Text = "mouse x = " + x + " Mouse y = " + y+ "\nColumn number: " + col + "\tRow number: " + row+"\n "
-                +"Player turn = "+engine.turn;
-            //Call for player Peice to hover at mouse            
-            //canvas.Image.Dispose();
+        {            
             engine.Hover(Properties.Settings.Default.userId, x, y);
-        }
-
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBox1.Checked)
-                { Properties.Settings.Default.userId = 1;
-                lblTurn.Text = "Player 1";
-            }
-            else
-                { Properties.Settings.Default.userId = -1;
-                lblTurn.Text = "Player 2";
-            }
-        }
+        }        
 
         private void canvas_Click(object sender, EventArgs e)
-        {
-            playerId = Properties.Settings.Default.userId;
-            OnMoveMade(this,new CanvasClickedArgs(x, y, playerId));
-            Properties.Settings.Default.userId *= -1;
+        {            
+            OnMoveMade(this,new CanvasClickedArgs(x, y, Properties.Settings.Default.userId));            
         }
 
         private void Winner(object sender, string e)
         {
             System.Windows.Forms.MessageBox.Show("WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! WINNER!!! ");
         }
-        private void resetBoard(object sender, EventArgs e)
+
+        private void connectButton_Click(object sender, EventArgs e)
+        {
+            if (!socket.networkActive)
+            {
+                if (clientCheckBox.Checked && ipInput.Text != "")
+                {
+                    // set socket ip and make it a client
+                    socket.SetIp(ipInput.Text);
+                    setupNetwork();
+                }
+                else if (!clientCheckBox.Checked)
+                {
+                    socket = new TcpConnect(4443);
+                    setupNetwork();
+                }
+                else
+                {
+                    MessageBox.Show("Please Enter IP Address");
+                }
+            }
+        }
+
+        private void setupNetwork()
+        {                        
+            thread = new Thread(socket.Start);
+            thread.Start();
+        }
+
+        // Todo
+        private void chatRecieved(object sender, string msg)
+        {
+            ChatScreen.Invoke((MethodInvoker)delegate
+            {
+                ChatScreen.Text += msg + "\nupdated from network thread";
+            });
+        }
+
+        private void ResetBoard(object sender, EventArgs e)
         {
             engine.reset();
         }
@@ -96,5 +120,11 @@ namespace ConnectFour
             //Invalidate();
         }
 
+
+
+        private void ErrorBox(object sender, string error)
+        {
+            MessageBox.Show("Error: "+ error);
+        }
     }
 }
