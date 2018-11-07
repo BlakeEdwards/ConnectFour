@@ -39,6 +39,7 @@
             this.play2Col = new System.Windows.Forms.PictureBox();
             this.boardCol = new System.Windows.Forms.PictureBox();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.play1Col)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bGCol)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.play2Col)).BeginInit();
@@ -138,11 +139,23 @@
             this.boardCol.TabStop = false;
             this.boardCol.Click += new System.EventHandler(this.boardCol_Click);
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(529, 151);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(70, 29);
+            this.button1.TabIndex = 13;
+            this.button1.Text = "Save";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // OptionsForm
             // 
+            this.AcceptButton = this.button1;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(620, 161);
+            this.ClientSize = new System.Drawing.Size(620, 192);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.boardCol);
             this.Controls.Add(this.play2Col);
             this.Controls.Add(this.bGCol);
@@ -177,5 +190,6 @@
         private System.Windows.Forms.PictureBox play2Col;
         private System.Windows.Forms.PictureBox boardCol;
         private System.Windows.Forms.ColorDialog colorDialog1;
+        private System.Windows.Forms.Button button1;
     }
 }

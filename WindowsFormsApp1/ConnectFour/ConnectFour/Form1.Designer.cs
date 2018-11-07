@@ -46,6 +46,7 @@
             this.disconectButton = new System.Windows.Forms.Button();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.testButton = new System.Windows.Forms.Button();
+            this.SendMsgButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.canvas)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -54,6 +55,7 @@
             // 
             this.canvas.BackColor = System.Drawing.SystemColors.ControlLight;
             this.canvas.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.canvas.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.canvas.Location = new System.Drawing.Point(12, 54);
             this.canvas.Name = "canvas";
             this.canvas.Size = new System.Drawing.Size(600, 600);
@@ -106,18 +108,20 @@
             // messageInput
             // 
             this.messageInput.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.messageInput.Location = new System.Drawing.Point(653, 625);
+            this.messageInput.Location = new System.Drawing.Point(654, 595);
             this.messageInput.Name = "messageInput";
             this.messageInput.Size = new System.Drawing.Size(224, 20);
             this.messageInput.TabIndex = 2;
             // 
             // ChatScreen
             // 
-            this.ChatScreen.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.ChatScreen.Location = new System.Drawing.Point(654, 370);
+            this.ChatScreen.BackColor = System.Drawing.Color.White;
+            this.ChatScreen.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.ChatScreen.HideSelection = false;
+            this.ChatScreen.Location = new System.Drawing.Point(653, 278);
             this.ChatScreen.Name = "ChatScreen";
             this.ChatScreen.ReadOnly = true;
-            this.ChatScreen.Size = new System.Drawing.Size(223, 249);
+            this.ChatScreen.Size = new System.Drawing.Size(223, 300);
             this.ChatScreen.TabIndex = 3;
             this.ChatScreen.TabStop = false;
             this.ChatScreen.Text = "";
@@ -136,7 +140,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(654, 297);
+            this.button1.Location = new System.Drawing.Point(654, 249);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 6;
@@ -150,7 +154,7 @@
             this.connectButton.Name = "connectButton";
             this.connectButton.Size = new System.Drawing.Size(75, 23);
             this.connectButton.TabIndex = 7;
-            this.connectButton.Text = "Connect";
+            this.connectButton.Text = "Host Game";
             this.connectButton.UseVisualStyleBackColor = true;
             this.connectButton.Click += new System.EventHandler(this.connectButton_Click);
             // 
@@ -160,6 +164,7 @@
             this.ipInput.Name = "ipInput";
             this.ipInput.Size = new System.Drawing.Size(100, 20);
             this.ipInput.TabIndex = 8;
+            this.ipInput.Text = "127.0.0.1";
             // 
             // clientCheckBox
             // 
@@ -170,6 +175,7 @@
             this.clientCheckBox.TabIndex = 9;
             this.clientCheckBox.Text = "Connect to IP Address";
             this.clientCheckBox.UseVisualStyleBackColor = true;
+            this.clientCheckBox.CheckedChanged += new System.EventHandler(this.clientCheckBox_CheckedChanged);
             // 
             // label1
             // 
@@ -188,6 +194,7 @@
             this.disconectButton.TabIndex = 11;
             this.disconectButton.Text = "Disconect";
             this.disconectButton.UseVisualStyleBackColor = true;
+            this.disconectButton.Click += new System.EventHandler(this.disconectButton_Click);
             // 
             // testButton
             // 
@@ -199,11 +206,21 @@
             this.testButton.UseVisualStyleBackColor = true;
             this.testButton.Click += new System.EventHandler(this.testButton_Click);
             // 
+            // SendMsgButton
+            // 
+            this.SendMsgButton.Location = new System.Drawing.Point(652, 626);
+            this.SendMsgButton.Name = "SendMsgButton";
+            this.SendMsgButton.Size = new System.Drawing.Size(224, 23);
+            this.SendMsgButton.TabIndex = 13;
+            this.SendMsgButton.Text = "Send Message";
+            this.SendMsgButton.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(905, 661);
+            this.Controls.Add(this.SendMsgButton);
             this.Controls.Add(this.testButton);
             this.Controls.Add(this.disconectButton);
             this.Controls.Add(this.label1);
@@ -219,8 +236,12 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(921, 700);
+            this.MinimumSize = new System.Drawing.Size(921, 700);
             this.Name = "Form1";
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Form1";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.canvas)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -248,6 +269,7 @@
         private System.Windows.Forms.Button disconectButton;
         private System.Windows.Forms.ColorDialog colorDialog1;
         private System.Windows.Forms.Button testButton;
+        private System.Windows.Forms.Button SendMsgButton;
     }
 }
 

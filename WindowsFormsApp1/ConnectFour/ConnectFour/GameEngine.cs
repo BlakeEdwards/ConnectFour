@@ -24,15 +24,26 @@ namespace ConnectFour
 
         public GameEngine(int hieght,int width)
         {
-            Ai = true;
-            turn = 1;
+            setUpEngine(hieght, width, 1,new int[7, 6]);            
+        }
+        public GameEngine(int hieght, int width,int turn)
+        {
+            setUpEngine(hieght, width, turn, new int[7, 6]);
+        }
+        public GameEngine(int hieght, int width, int turn, int[,] boardState)
+        {
+            setUpEngine(hieght, width, turn, boardState);
+        }
+        public void setUpEngine(int hieght, int width, int turn, int[,] boardState)
+        {
+            Ai = false;
+            this.turn = turn;
             Width = width;
             // Todo use this to test if game is active and enable /diable engine.Onupdate.
             gameActive = true;
-            board = new Board(hieght, Width);
+            board = new Board(hieght, Width,boardState);
             OnUpdate?.Invoke(this, board.getBoardImg());
         }
-
         //Player Peice Hovering
         /// <summary>
         /// Will update a board img with player peice hoving at mouse (x,y)
@@ -72,8 +83,7 @@ namespace ConnectFour
         public void clearHove(object sender, EventArgs e) => OnUpdate?.Invoke(this, board.getBoardImg());
         //Making a Move
         public void gameBoard_Clicked(object sender, CanvasClickedArgs e)
-        {            
-            if (e.playerId != turn) return;     // not players turn Return
+        {                        
             if (e.playerId != turn) return;     // not players turn Return
             int col = board.getColumnNumber(e.x);
             int row = board.getRowNumber(e.y);
@@ -82,7 +92,7 @@ namespace ConnectFour
         }
         public void Move(object sender, MoveArgs e)
         {
-            
+            if (e.playerId != turn) return;     // not players turn Return
             int col = e.col;
             int playerId = e.playerId;
             int row;
@@ -90,7 +100,8 @@ namespace ConnectFour
             if (!Move_Available(col)) return; // Move Not Avaliable Return 
             else
             {
-                OnMoveMade?.Invoke(this, new MoveArgs(col, Properties.Settings.Default.userId));
+                //annoyouns Move to network if it was made by local player
+                if (e.playerId == Properties.Settings.Default.userId) OnMoveMade?.Invoke(this, new MoveArgs(col, Properties.Settings.Default.userId));
                 row = GetRow(col,playerId);
                 lock (board)        // Lock Board while in use
                 {
@@ -100,6 +111,7 @@ namespace ConnectFour
                     OnUpdate?.Invoke(this, board.getBoardImg());
                 }
                 turn *= -1;
+                // Ai Takes over moves
                 if (Ai && turn == Properties.Settings.Default.userId)
                 {
                     AiPlayer();
@@ -117,7 +129,7 @@ namespace ConnectFour
         {
             int h = board.getHieght();
             int w = board.getWidth();            
-            board = new Board(h, w);
+            board = new Board(h, w,new int[Board.nColumns, Board.nColumns]);
             OnUpdate?.Invoke(this, board.getBoardImg());
         }
         
@@ -198,7 +210,6 @@ namespace ConnectFour
             if (ctn >= 3) return true;
             return false;
         }        
-
         //Top Left to Bottom Right Win
         private bool tlbr_win(int playerId, int col, int row)
         {
@@ -250,7 +261,7 @@ namespace ConnectFour
         }
         private void AiPlayer()
         {
-
+            // Todo impliment Ai logic    
         }
         public void SetAi(object obj,bool value)
         {

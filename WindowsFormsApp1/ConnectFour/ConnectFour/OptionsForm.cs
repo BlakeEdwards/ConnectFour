@@ -12,24 +12,34 @@ namespace ConnectFour
 {
     public partial class OptionsForm : Form
     {
+        string userName;
+        Color oplay1Col, oplay2Col, obGCol, oboardCol;
         public OptionsForm()
         {
             InitializeComponent();
-            textBox1.Text = Properties.Settings.Default.userName;
+            //set Local variables
+            userName = Properties.Settings.Default.userName;
+            oplay1Col= Properties.Settings.Default.play1Col;
+            oplay2Col= Properties.Settings.Default.play2Col;
+            obGCol= Properties.Settings.Default.backGroundColor;
+            oboardCol= Properties.Settings.Default.boardColor;
+
+            // set FormView
+            textBox1.Text  = Properties.Settings.Default.userName;
             play1Col.BackColor = Properties.Settings.Default.play1Col;
             play2Col.BackColor = Properties.Settings.Default.play2Col;
             bGCol.BackColor = Properties.Settings.Default.backGroundColor;
             boardCol.BackColor = Properties.Settings.Default.boardColor;
-        }
 
-       
+
+        }
 
         private void play1Col_Click(object sender, EventArgs e)
         {
             if(colorDialog1.ShowDialog() == DialogResult.OK)
             {
                 play1Col.BackColor = colorDialog1.Color;
-                Properties.Settings.Default.play1Col = colorDialog1.Color;
+                oplay1Col = colorDialog1.Color;
             }
         }
 
@@ -38,7 +48,7 @@ namespace ConnectFour
             if (colorDialog1.ShowDialog() == DialogResult.OK)
             {
                 play2Col.BackColor = colorDialog1.Color;
-                Properties.Settings.Default.play2Col = colorDialog1.Color;
+                oplay2Col = colorDialog1.Color;
             }
         }
 
@@ -47,7 +57,7 @@ namespace ConnectFour
             if (colorDialog1.ShowDialog() == DialogResult.OK)
             {
                 bGCol.BackColor = colorDialog1.Color;
-                Properties.Settings.Default.backGroundColor = colorDialog1.Color;
+                obGCol = colorDialog1.Color;
             }
         }
 
@@ -56,13 +66,22 @@ namespace ConnectFour
             if (colorDialog1.ShowDialog() == DialogResult.OK)
             {
                 boardCol.BackColor = colorDialog1.Color;
-                Properties.Settings.Default.boardColor = colorDialog1.Color;
+                oboardCol = colorDialog1.Color;
             }
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default.userName = textBox1.Text;
+            userName = textBox1.Text;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.play1Col = oplay1Col;
+            Properties.Settings.Default.play2Col = oplay2Col;
+            Properties.Settings.Default.backGroundColor = obGCol;
+            Properties.Settings.Default.boardColor = oboardCol;
+            Properties.Settings.Default.userName = userName;
         }
     }
 }

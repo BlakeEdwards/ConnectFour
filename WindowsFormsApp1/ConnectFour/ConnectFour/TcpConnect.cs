@@ -19,12 +19,11 @@ namespace ConnectFour
         NetworkStream netStream;
         byte[] bytes = new Byte[1024];
         public bool networkActive { get; set; }
-        public event EventHandler<int> OnMoveRecieved;
+        public event EventHandler<MoveArgs> OnMoveRecieved;
         public event EventHandler<string> OnChatRecieved;
         public event EventHandler<string> OnError;
-        public event EventHandler<int> OnSetTurn;
-        public event EventHandler<int> OnSetId;
-        public event EventHandler OnConnected;
+        public event EventHandler<int> OnNewGame;
+        public event EventHandler<int> OnLoadGame;        
         public event EventHandler OnDisconnect;
 
         /// <summary>
@@ -45,14 +44,13 @@ namespace ConnectFour
         /// </summary>
         public void Start()
         {
-            OnChatRecieved?.Invoke(this, "Connecting");
+            OnChatRecieved.Invoke(this, "Connecting");
             networkActive = true;
             if (isServer)
             {
                 try
                 {   
-                    // This Machine will be a server
-                    // Todo set Player Id back in Engine
+                    // Server Machine
                     // Id = 1
                     TcpListener listener = new TcpListener(IPAddress.Any, port);
                     listener.Start();
@@ -61,7 +59,7 @@ namespace ConnectFour
                     netStream = client.GetStream();
                     listener.Stop();
                     // Set Id of this Machine
-                    Properties.Settings.Default.userId = -1;
+                    Properties.Settings.Default.userId = 1;
                 }
                 catch(Exception e)
                 {
@@ -74,6 +72,8 @@ namespace ConnectFour
             {
                 try
                 {
+                    // Client Machine
+                    // Id = 1
                     client = new TcpClient(ip, port);
                     netStream = client.GetStream();
                     OnChatRecieved?.Invoke(this, "Client Created");
@@ -88,9 +88,15 @@ namespace ConnectFour
                     otherSideClosing = true;
                 }
             }            
-            
             Network_loop();
             closeConnection();
+        }
+
+        internal void localMoveMade(object sender, MoveArgs e)
+        {
+
+            string cmd = "Move|" + e.playerId + "|" + e.col;
+            Add_send(cmd);
         }
 
         private void Network_loop()
@@ -101,14 +107,6 @@ namespace ConnectFour
                 int turn = rnd.Next( 2);
                 // if turn is 1 we start
                 // if turn is 0 they start
-                if(turn == 0)
-                { OnSetTurn?.Invoke(this, -1); }
-                else
-                {
-                    sendData = "SetTurn|-1";
-                    send();
-                }
-
             }
             while (networkActive)
             {
@@ -161,12 +159,12 @@ namespace ConnectFour
         {
             // ensure user entered data doesnt contain a command delimiter
             cmd = cmd.Replace("~", "");
-
+            string[] chatcheck = cmd.Split('|');
             // define end of command with ~ delimiter
             lock (sendData)
             {
                 sendData += cmd + "~";
-                Execute_Commands(cmd, "Sent: ");
+                if (chatcheck[0] == "Chat") { Execute_Commands(cmd, "Sent: "); }
             }
         }
         private void Execute_Commands(string data, string pretext)
@@ -191,11 +189,11 @@ namespace ConnectFour
                         }
                         break;
                     case "Move":
-                        OnMoveRecieved?.Invoke(this, int.Parse(cmd[1]));
+                        OnMoveRecieved?.Invoke(this, new MoveArgs( int.Parse(cmd[2]), int.Parse(cmd[1]) ));
                         break;
-                    case "SetTurn":
-                        OnSetTurn?.Invoke(this, int.Parse(cmd[1]));
-                        break;
+                    case "StartNewGame":
+                        OnNewGame?.Invoke(this, int.Parse(cmd[1]));
+                            break;
                     case "Close":
                         networkActive = false;
                         otherSideClosing = true;
@@ -237,7 +235,7 @@ namespace ConnectFour
             if (!networkActive)
             {
                 this.ip = ip;
-                isServer = false;
+                isServer = ip == "" ? true : false;
             }
             else
             {
