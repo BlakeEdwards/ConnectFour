@@ -24,11 +24,11 @@ namespace ConnectFour
 
         public GameEngine(int hieght,int width)
         {
-            setUpEngine(hieght, width, 1,new int[7, 6]);            
+            setUpEngine(hieght, width, 1,new int[Board.nColumns, Board.nRows]);
         }
         public GameEngine(int hieght, int width,int turn)
         {
-            setUpEngine(hieght, width, turn, new int[7, 6]);
+            setUpEngine(hieght, width, turn, new int[Board.nColumns, Board.nRows]);
         }
         public GameEngine(int hieght, int width, int turn, int[,] boardState)
         {
@@ -59,7 +59,7 @@ namespace ConnectFour
                 // get col number
                 int col = board.getColumnNumber(e.X);
                 //bound Col 0-6
-                if (col > 6) col = 6;
+                if (col > Board.nColumns-1) col = Board.nColumns-1;
                 if (col < 0) col = 0;
                 if (!Move_Available(col)) return;
 
@@ -87,7 +87,7 @@ namespace ConnectFour
             if (e.playerId != turn) return;     // not players turn Return
             int col = board.getColumnNumber(e.x);
             int row = board.getRowNumber(e.y);
-            col = (col > 6) ? 6 : col;              // bound col so it can go over number of cols
+            col = (col > (Board.nColumns-1)) ? (Board.nColumns - 1) : col;              // bound col so it can go over number of cols
             this.Move(this, new MoveArgs(col, e.playerId));
         }
         public void Move(object sender, MoveArgs e)
@@ -136,7 +136,7 @@ namespace ConnectFour
         // Helper Classes
         private int Hover_Height(int col)
         {
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < (Board.nRows-1); i++)
             {
                 if (board.boardState[col, i+1] != 0)
                     return i+1;
@@ -145,7 +145,7 @@ namespace ConnectFour
         }
         private bool Move_Available(int col)
         {            
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < (Board.nColumns-1); i++)
             {
                 if (board.boardState[col, i] == 0) return true;
             }
@@ -153,14 +153,14 @@ namespace ConnectFour
         }
         private int GetRow(int col,int playerId)
         {
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < (Board.nRows-1); i++)
             {
                 if (board.boardState[col,i+1] != 0)
                 {
                     return i;
                 }
             }
-            return 5;
+            return Board.nRows-1;
         }
 
         /*Check for Win 

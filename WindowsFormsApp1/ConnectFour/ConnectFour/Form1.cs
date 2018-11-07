@@ -169,7 +169,7 @@ namespace ConnectFour
         {
             Random rnd = new Random();
             int n = rnd.Next(0, 7);
-            engine.Move(this, new MoveArgs(n, -1));
+            engine.Move(this, new MoveArgs(n, engine.turn));
         }
     }
 }
