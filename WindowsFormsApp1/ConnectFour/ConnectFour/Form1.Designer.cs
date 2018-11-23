@@ -21,8 +21,10 @@ namespace ConnectFour
             this.canvas = new System.Windows.Forms.PictureBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.gameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuNewGame = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuSaveGame = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuLoadGame = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuOptions = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.messageInput = new System.Windows.Forms.TextBox();
             this.ChatScreen = new System.Windows.Forms.RichTextBox();
@@ -36,10 +38,8 @@ namespace ConnectFour
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.testButton = new System.Windows.Forms.Button();
             this.SendMsgButton = new System.Windows.Forms.Button();
-            this.saveGameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadGameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             ((System.ComponentModel.ISupportInitialize)(this.canvas)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -61,7 +61,7 @@ namespace ConnectFour
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.gameToolStripMenuItem,
-            this.optionsToolStripMenuItem,
+            this.menuOptions,
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -72,28 +72,42 @@ namespace ConnectFour
             // gameToolStripMenuItem
             // 
             this.gameToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.newToolStripMenuItem,
-            this.saveGameToolStripMenuItem,
-            this.loadGameToolStripMenuItem});
+            this.menuNewGame,
+            this.menuSaveGame,
+            this.menuLoadGame});
             this.gameToolStripMenuItem.Name = "gameToolStripMenuItem";
             this.gameToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.G)));
             this.gameToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
             this.gameToolStripMenuItem.Text = "Game";
             // 
-            // newToolStripMenuItem
+            // menuNewGame
             // 
-            this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.newToolStripMenuItem.Text = "New";
-            this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
+            this.menuNewGame.Name = "menuNewGame";
+            this.menuNewGame.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+            this.menuNewGame.Size = new System.Drawing.Size(152, 22);
+            this.menuNewGame.Text = "New";
+            this.menuNewGame.Click += new System.EventHandler(this.menuNewGame_Click);
             // 
-            // optionsToolStripMenuItem
+            // menuSaveGame
             // 
-            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
-            this.optionsToolStripMenuItem.Text = "Options";
-            this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
+            this.menuSaveGame.Name = "menuSaveGame";
+            this.menuSaveGame.Size = new System.Drawing.Size(152, 22);
+            this.menuSaveGame.Text = "Save Game";
+            this.menuSaveGame.Click += new System.EventHandler(this.menuSaveGame_Click);
+            // 
+            // menuLoadGame
+            // 
+            this.menuLoadGame.Name = "menuLoadGame";
+            this.menuLoadGame.Size = new System.Drawing.Size(152, 22);
+            this.menuLoadGame.Text = "Load Game";
+            this.menuLoadGame.Click += new System.EventHandler(this.menuLoadGame_Click);
+            // 
+            // menuOptions
+            // 
+            this.menuOptions.Name = "menuOptions";
+            this.menuOptions.Size = new System.Drawing.Size(61, 20);
+            this.menuOptions.Text = "Options";
+            this.menuOptions.Click += new System.EventHandler(this.menuOptions_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -209,23 +223,11 @@ namespace ConnectFour
             this.SendMsgButton.TabIndex = 13;
             this.SendMsgButton.Text = "Send Message";
             this.SendMsgButton.UseVisualStyleBackColor = true;
+            this.SendMsgButton.Click += new System.EventHandler(this.SendMsgButton_Click);
             // 
-            // saveGameToolStripMenuItem
+            // openFileDialog
             // 
-            this.saveGameToolStripMenuItem.Name = "saveGameToolStripMenuItem";
-            this.saveGameToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.saveGameToolStripMenuItem.Text = "Save Game";
-            this.saveGameToolStripMenuItem.Click += new System.EventHandler(this.saveGameToolStripMenuItem_Click);
-            // 
-            // loadGameToolStripMenuItem
-            // 
-            this.loadGameToolStripMenuItem.Name = "loadGameToolStripMenuItem";
-            this.loadGameToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.loadGameToolStripMenuItem.Text = "Load Game";
-            // 
-            // openFileDialog1
-            // 
-            this.openFileDialog1.FileName = "openFileDialog1";
+            this.openFileDialog.FileName = "openFileDialog1";
             // 
             // Form1
             // 
@@ -253,7 +255,6 @@ namespace ConnectFour
             this.Name = "Form1";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Form1";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.canvas)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -267,8 +268,8 @@ namespace ConnectFour
         private System.Windows.Forms.PictureBox canvas;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem gameToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem menuNewGame;
+        private System.Windows.Forms.ToolStripMenuItem menuOptions;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.TextBox messageInput;
         private System.Windows.Forms.RichTextBox ChatScreen;
@@ -282,10 +283,10 @@ namespace ConnectFour
         private System.Windows.Forms.ColorDialog colorDialog1;
         private System.Windows.Forms.Button testButton;
         private System.Windows.Forms.Button SendMsgButton;
-        private System.Windows.Forms.ToolStripMenuItem saveGameToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem loadGameToolStripMenuItem;
-        private System.Windows.Forms.OpenFileDialog openFileDialog1;
-        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.ToolStripMenuItem menuSaveGame;
+        private System.Windows.Forms.ToolStripMenuItem menuLoadGame;
+        private System.Windows.Forms.OpenFileDialog openFileDialog;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
     }
 }

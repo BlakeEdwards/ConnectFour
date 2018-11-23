@@ -8,65 +8,88 @@ using System.Windows.Forms;
 
 namespace ConnectFour
 {
-    class GameEngine: IDisposable
+    class GameEngine
     {
         //public event EventHandler<MultipleOfFiveEventArgs> OnMultipleOfFiveReached;
-        public event EventHandler<Bitmap> OnUpdate;        // define an event
+       // public event EventHandler<Bitmap> OnUpdate;        // define an event
+        public event EventHandler<Board> OnUpdate;        // define an event
         public event EventHandler<MoveArgs> OnMoveMade;        
-        public event EventHandler<string> OnWin;
-        private int Width;
-        // Todo make turn private and clean up
+        public event EventHandler<string> OnWin;        
+        private int Width;        
         public bool gameActive { get; private set; }
         public bool Ai { get; set; }     // attach to player object
-        public int turn;
+        public int Turn { get; set; }        
         private Board board;
 
+        /// <summary>
+        /// /// Initiate with a random player to Start
+        /// </summary>
+        /// <param name="hieght"></param>
+        /// <param name="width"></param>
         public GameEngine(int hieght,int width)
-        {
-            setUpEngine(hieght, width, 1,new int[Board.nColumns, Board.nRows]);
-        }
+        {   
+            Random generateTurn = new Random();
+            int setTurn = generateTurn.Next(0, 10);
+            setTurn = setTurn > 5 ? 1 : -1;
+            setUpEngine(hieght, width, setTurn,new int[Board.nColumns, Board.nRows]);
+        }        
+        /// <summary>
+        /// Initiate with a set player to Start
+        /// </summary>
+        /// <param name="hieght"></param>
+        /// <param name="width"></param>
+        /// <param name="turn"></param>
         public GameEngine(int hieght, int width,int turn)
         {
             setUpEngine(hieght, width, turn, new int[Board.nColumns, Board.nRows]);
         }
+
+        /// <summary>
+        /// Start Game With a loaded Board
+        /// </summary>
+        /// <param name="hieght"></param>
+        /// <param name="width"></param>
+        /// <param name="turn"></param>
+        /// <param name="boardState"></param>
         public GameEngine(int hieght, int width, int turn, int[,] boardState)
         {
             setUpEngine(hieght, width, turn, boardState);
         }
+
+        public void StartGame(GameState gameState)
+        {
+            board.boardState = gameState.board;
+            Turn = gameState.turn;
+            updateEvent();
+        }
+
         public void setUpEngine(int hieght, int width, int turn, int[,] boardState)
         {
             Ai = false;
-            this.turn = turn;
+            this.Turn = turn;
             Width = width;
             // Todo use this to test if game is active and enable /diable engine.Onupdate.
             gameActive = true;
             board = new Board(hieght, Width,boardState);
-            OnUpdate?.Invoke(this, board.getBoardImg());
+            OnUpdate?.Invoke(this, board);
         }
-        //Player Peice Hovering
-        /// <summary>
-        /// Will update a board img with player peice hoving at mouse (x,y)
-        /// subcribe to OnUpdate to recieve img
-        /// </summary>
-        /// <param name="playerId">player Id</param>
-        /// <param name="x">Mouse x on Board</param>
-        /// <param name="y">Mouse x on Board</param>
+        
         public void Hover(object obj, MouseEventArgs e)
         {
-            if (Properties.Settings.Default.userId == turn)
+            if (Properties.Settings.Default.userId == Turn)
             {
                 // get col number
                 int col = board.getColumnNumber(e.X);
                 //bound Col 0-6
                 if (col > Board.nColumns-1) col = Board.nColumns-1;
                 if (col < 0) col = 0;
-                if (!Move_Available(col)) return;
-
                 int row = Hover_Height(col);
                 lock (board)        // LockBoard while in use
                 {
-                    
-                    OnUpdate?.Invoke(this, board.playerHover(Properties.Settings.Default.userId, col, row));
+                    //OnUpdate?.Invoke(this, board.playerHover(Properties.Settings.Default.userId, col, row));
+                    board.boardState[col, 0] = Turn;
+                    updateEvent();
+                    board.boardState[col, 0] = 0;
                 }
                 return;
             }
@@ -75,15 +98,16 @@ namespace ConnectFour
 
         internal void setTurn(object sender, int e)
         {
-            turn = e;
+            Turn = e;
 
         }
 
-        public void clearHove(object sender, EventArgs e) => OnUpdate?.Invoke(this, board.getBoardImg());
+        //public void clearHove(object sender, EventArgs e) => OnUpdate?.Invoke(this, board.getBoardImg());
+        public void clearHove(object sender, EventArgs e) => updateEvent();
         //Making a Move
         public void gameBoard_Clicked(object sender, CanvasClickedArgs e)
         {                        
-            if (e.playerId != turn) return;     // not players turn Return
+            if (e.playerId != Turn) return;     // not players turn Return
             int col = board.getColumnNumber(e.x);
             int row = board.getRowNumber(e.y);
             col = (col > (Board.nColumns-1)) ? (Board.nColumns - 1) : col;              // bound col so it can go over number of cols
@@ -91,7 +115,7 @@ namespace ConnectFour
         }
         public void Move(object sender, MoveArgs e)
         {
-            if (e.playerId != turn) return;     // not players turn Return
+            if (e.playerId != Turn) return;     // not players turn Return
             int col = e.col;
             int playerId = e.playerId;
             int row;
@@ -105,15 +129,14 @@ namespace ConnectFour
                 lock (board)        // Lock Board while in use
                 {
                     board.boardState[col, row] = e.playerId;      //update Boardstate With move
-                    board.AddPeice(col, row);
-                    //OnUpdate(this, board.getBoardImg());
-                    OnUpdate?.Invoke(this, board.getBoardImg());
+                    OnUpdate(this, board);
                 }
-                turn *= -1;   // use
+                Turn *= -1;   // use
                 // use  reference types that point to player / players peices ------------------------------------------------------
                 // dont repeat your selfs
+
                 // Ai Takes over moves
-                if (Ai && turn == Properties.Settings.Default.userId)
+                if (Ai && Turn == Properties.Settings.Default.userId)
                 {
                     AiPlayer();
                 }
@@ -126,12 +149,18 @@ namespace ConnectFour
 
         }
 
+        /// <summary>
+        /// Returns Current Board Array
+        /// </summary>
+        /// <returns>int32[,]</returns>
+        public int[,] GetBoard() => board.boardState;
+
         public void reset()
         {
             int h = board.getHieght();
             int w = board.getWidth();            
             board = new Board(h, w,new int[Board.nColumns, Board.nColumns]);
-            OnUpdate?.Invoke(this, board.getBoardImg());
+            updateEvent();
         }
         
         // Helper Classes
@@ -144,17 +173,12 @@ namespace ConnectFour
             }
             return 6;
         }
-        private bool Move_Available(int col)
-        {            
-            for (int i = 0; i < (Board.nColumns-1); i++)
-            {
-                if (board.boardState[col, i] == 0) return true;
-            }
-            return false;
-        }
+
+        private bool Move_Available(int col) => board.boardState[col, 1] == 0 ?  true: false;
+        
         private int GetRow(int col,int playerId)
         {
-            for (int i = 0; i < (Board.nRows-1); i++)
+            for (int i = 1; i < (Board.nRows-1); i++)
             {
                 if (board.boardState[col,i+1] != 0)
                 {
@@ -168,8 +192,9 @@ namespace ConnectFour
          * 0 = no win
          * 1 = player 1
          * -1 = player 2
-         */        
+         */
 
+        internal GameState GetGameState() => new GameState(Turn, board.boardState);
         private bool win(int playerId,int col,int row)
         {            
             if (vert_win(playerId,col)) return true;
@@ -178,11 +203,14 @@ namespace ConnectFour
             if (bltr_win(playerId, col, row)) return true;            
             return false;
         }
+
+
         // Vertical Win
         private bool vert_win(int playerId,int col)
         {
+            //Todo Make row and column  into variable constants
             int ctn = 0;            
-            for (int i = 0; i < 6; i++)
+            for (int i = 1; i < 7; i++)// row
             {
                 if (board.boardState[col, i] == playerId * -1) break;
                 else if (board.boardState[col, i] == playerId) ctn ++; 
@@ -216,13 +244,14 @@ namespace ConnectFour
         {
             
             int x = col, y = row,ctn = 0;
-            while(x > -1 && y>-1 && board.boardState[x, y]== playerId)
+            //changed y here to zero for the hover Bounds
+            while (x > -1 && y>-0 && board.boardState[x, y]== playerId)
             {
                 ctn++;
                 x--;y--;
             }
             x = col+1; y = row+1;
-            while (x < 7 && y < 6 && board.boardState[x, y] == playerId)
+            while (x < 7 && y < 7 && board.boardState[x, y] == playerId)
             {
                 ctn++;
                 x++; y++;
@@ -234,13 +263,13 @@ namespace ConnectFour
         private bool bltr_win(int playerId, int col, int row)
         {
             int x = col, y = row, ctn = 0;            
-            while (x > -1 && y < 6 && board.boardState[x, y] == playerId)
+            while (x > -1 && y < 7 && board.boardState[x, y] == playerId)
             {
                 ctn++;
                 x--; y++;
             }
             x = col + 1; y = row-1;
-            while (x < 7 && y > -1 && board.boardState[x, y] == playerId)
+            while (x < 7 && y > -0 && board.boardState[x, y] == playerId)
             {
                 ctn++;
                 x++; y--;
@@ -268,12 +297,12 @@ namespace ConnectFour
         public void SetAi(object obj,bool value)
         {
             Ai = value;
-            if(Ai && turn == Properties.Settings.Default.userId) { AiPlayer(); }
+            if(Ai && Turn == Properties.Settings.Default.userId) { AiPlayer(); }
         }
 
-        public void Dispose()
+        private void updateEvent()
         {
-            board.Dispose();
+            OnUpdate?.Invoke(this, board);
         }
     }
 

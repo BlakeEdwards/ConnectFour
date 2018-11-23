@@ -20,5 +20,8 @@
     <Setting Name="backGroundColor" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">Control</Value>
     </Setting>
+    <Setting Name="otherPlayer" Type="System.String" Scope="User">
+      <Value Profile="(Default)">carlie</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

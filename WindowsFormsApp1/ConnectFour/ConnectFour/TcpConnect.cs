@@ -11,7 +11,9 @@ namespace ConnectFour
     {
         private int port;
         private string ip;
-        private bool isServer;
+        private const string commandDelimiter = "~";
+        private const char paramDelimiter = '|';
+        private bool isServer = false;
         private bool otherSideClosing = false;
         private TcpClient client;
         private TcpListener listener;
@@ -22,8 +24,9 @@ namespace ConnectFour
         public event EventHandler<MoveArgs> OnMoveRecieved;
         public event EventHandler<string> OnChatRecieved;
         public event EventHandler<string> OnError;
-        public event EventHandler<int> OnNewGame;
-        public event EventHandler<int> OnLoadGame;        
+        public event EventHandler<GameState> OnNewGame;
+        
+        public event EventHandler OnConnect;
         public event EventHandler OnDisconnect;
 
         /// <summary>
@@ -33,9 +36,9 @@ namespace ConnectFour
         /// <param name="port"></param>
         public TcpConnect(int port)
         {
+            ip = "";
             sendData = "";
-            this.port = port;
-            isServer = true;
+            this.port = port;            
             //IPAddress localAddr = IPAddress.Parse("127.0.0.1");
             // TcpListener server = new TcpListener(port);            
         }
@@ -44,8 +47,7 @@ namespace ConnectFour
         /// </summary>
         public void Start()
         {
-            
-            networkActive = true;
+            isServer = ip.Length <= 0 ? true : false;            
             if (isServer)
             {
                 try
@@ -59,7 +61,8 @@ namespace ConnectFour
                     OnChatRecieved?.Invoke(this, "server Created");
                     netStream = client.GetStream();
                     listener.Stop();
-                    
+                    networkActive = true;
+
                     // Set Id of this Machine
                     Properties.Settings.Default.userId = 1;
                 }
@@ -67,7 +70,7 @@ namespace ConnectFour
                 {
                     OnChatRecieved?.Invoke(this, "Connecting Stoped");
                     try { listener.Stop(); } catch { }
-                    OnError?.Invoke(this, e.Message);
+                    //OnError?.Invoke(this, e.Message);
                     networkActive = false;
                     otherSideClosing = true;
                 }
@@ -83,6 +86,7 @@ namespace ConnectFour
                     OnChatRecieved?.Invoke(this, "Client Created");
                     netStream = client.GetStream();
                     // Set Id of this Machine
+                    networkActive = true;
                     Properties.Settings.Default.userId = -1;
                 }
                 catch(Exception e)
@@ -91,31 +95,55 @@ namespace ConnectFour
                     networkActive = false;
                     otherSideClosing = true;
                 }
-            }            
-            Network_loop();
+            }
+            if (client != null)
+            {
+                HandShake();
+                Network_loop();
+            }
             closeConnection();
+        }
+
+        private void HandShake()
+        {
+            sendData = Properties.Settings.Default.userName;
+            send();
+            Thread.Sleep(30);
+            while (client.Available >0)
+            {
+                byte[] msgBuffer = new byte[client.Available];
+                netStream.Read(msgBuffer, 0, client.Available);
+                recieveData = Encoding.UTF8.GetString(msgBuffer);
+            }
+
+            netStream.Flush();
+
+            Properties.Settings.Default.otherPlayer = recieveData;
         }
 
         internal void localMoveMade(object sender, MoveArgs e)
         {
 
-            string cmd = "Move|" + e.playerId + "|" + e.col;
+            string cmd = "Move|" + e.playerId + paramDelimiter + e.col;
             Add_send(cmd);
         }
 
         private void Network_loop()
         {
-            if (networkActive)
+            if (isServer)
             {
-                Random rnd = new Random();
-                int turn = rnd.Next( 2);
-                // if turn is 1 we start
-                // if turn is 0 they start
+
+            }
+            else
+            {
+
             }
             while (networkActive)
             {
-                if (client != null)
+                if (!client.Connected) networkActive = false;
+                    if (client != null)
                 {
+                    
                     lock (client)
                     {
                         if (client.Available > 0)
@@ -134,7 +162,6 @@ namespace ConnectFour
                 }
                 Thread.Sleep(10);
             }
-            OnChatRecieved?.Invoke(this, "Disconnecting");
         }
 
         private void send()
@@ -143,7 +170,6 @@ namespace ConnectFour
             //finalize current set of inputs with <EOF>
             byte[] msgBuffer = Encoding.UTF8.GetBytes(sendData);
             netStream.Write(msgBuffer, 0, msgBuffer.Length); // Blocks
-            netStream.Flush();
             // clear the data that has been send
             sendData = "";
         }
@@ -154,7 +180,8 @@ namespace ConnectFour
             byte[] msgBuffer = new byte[client.Available];
             netStream.Read(msgBuffer, 0, client.Available);
             recieveData = Encoding.UTF8.GetString(msgBuffer);
-            if (recieveData.Length > 0) { Execute_Commands(recieveData, "Recieved: "); }
+            if (recieveData.Length > 0) { Execute_Commands(recieveData, "Recieved"); }
+            netStream.Flush();
         }
         /// <summary>
         /// TcpConnection interface for sending cmd across the Network
@@ -163,46 +190,39 @@ namespace ConnectFour
         public void Add_send(string cmd)
         {
             // ensure user entered data doesnt contain a command delimiter
-            cmd = cmd.Replace("~", "");
-            string[] chatcheck = cmd.Split('|');
+            cmd = cmd.Replace(commandDelimiter, "");
+            string[] chatcheck = cmd.Split(paramDelimiter);
             // define end of command with ~ delimiter
             
-                sendData += cmd + "~";
-                if (chatcheck[0] == "Chat") { Execute_Commands(cmd, "Sent: "); }
+                sendData += cmd + commandDelimiter;
+            if (chatcheck[0] == "Chat") { Execute_Commands(cmd, "Sent"); }
         }
+
         //extract out to seperate class commands
         // net work is just send receive
         private void Execute_Commands(string data, string pretext)
         {
-
-            // command format cmd•parms /• = alt 7
-            //  chat•Hello
-            //  move•5
-            //  setTurn•1
-            //  LoadBoard•board[] ... pending to add Todo
-            //  Disconnect•1             // disconect 1 = true : 0 = false
-            // chat|bob|hello world ~ move | 7
-           
-            // command [0] = chat|bob|hello world 
-            // command [1] =  move | 7
             string[] command = data.Split('~');
             for (int i = 0; i < command.Length; i++)
             {
-                string[] cmd = command[i].Split('|');
+                string[] cmd = command[i].Split(paramDelimiter);
                 switch (cmd[0])
                 {// constatnats any litral the data is in the code
-                    case "Chat":
-                        if (cmd[1].Length > 0)
+                    case "Chat":                                                
+                        if (cmd[2].Length > 0)
                         {// send obj not primatives obj validation or some function
-                            OnChatRecieved?.Invoke(this, pretext + cmd[1]);
+                            if (pretext == "Sent") { pretext = "You"; }//Properties.Settings.Default.userName; }
+                            else { pretext = cmd[1]; }
+                            OnChatRecieved?.Invoke(this, pretext + cmd[2]);
                         }
                         break;
                     case "Move":
                         OnMoveRecieved?.Invoke(this, new MoveArgs( int.Parse(cmd[2]), int.Parse(cmd[1]) ));
                         break;
-                    case "StartNewGame":
-                        OnNewGame?.Invoke(this, int.Parse(cmd[1]));
+                    case "StartGame":
+                        OnNewGame?.Invoke(this, GameState.GetGameState(cmd[1]));
                             break;
+
                     case "Close":
                         networkActive = false;
                         otherSideClosing = true;
@@ -210,6 +230,7 @@ namespace ConnectFour
                 }
             }
         }   
+
         /// <summary>
         /// When the Network is done call CloseConnection To clean up
         /// reasources
@@ -219,7 +240,7 @@ namespace ConnectFour
             if (!otherSideClosing)
             {
                 sendData = "Close|true";
-                send();
+                send();                
             }
             try
             {
@@ -229,8 +250,9 @@ namespace ConnectFour
                 client.Close();
                 client.Dispose();                
             }
-            catch { }
+            catch (Exception e) { Console.WriteLine(e.ToString()); }
             OnDisconnect?.Invoke(this, new EventArgs());
+            otherSideClosing = false;
         }
 
         /// <summary>
@@ -254,13 +276,11 @@ namespace ConnectFour
 
         public void Dispose()
         {
-            try
-            {
-                listener.Stop();
-                client.Dispose();                
-                netStream.Dispose();
-            }
-            catch (Exception e){ }
+            try{listener.Stop();}catch (Exception e) { Console.WriteLine(e.ToString()); }
+            try {client.Dispose(); } catch (Exception e) { Console.WriteLine(e.ToString()); }
+            try {netStream.Dispose(); ; } catch (Exception e) { Console.WriteLine(e.ToString()); }
+            
+            
             GC.SuppressFinalize(this);
 
         }

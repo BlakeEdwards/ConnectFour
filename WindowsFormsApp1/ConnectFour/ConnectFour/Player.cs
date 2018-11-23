@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ConnectFour
 {
-    class Player
+    public class Player
     {
         public static int Radius { get; set; }
         public static int Count { get; set; }
