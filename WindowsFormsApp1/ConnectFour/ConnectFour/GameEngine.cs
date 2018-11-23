@@ -17,7 +17,7 @@ namespace ConnectFour
         private int Width;
         // Todo make turn private and clean up
         public bool gameActive { get; private set; }
-        public bool Ai { get; set; }
+        public bool Ai { get; set; }     // attach to player object
         public int turn;
         private Board board;
 
@@ -109,7 +109,9 @@ namespace ConnectFour
                     //OnUpdate(this, board.getBoardImg());
                     OnUpdate?.Invoke(this, board.getBoardImg());
                 }
-                turn *= -1;
+                turn *= -1;   // use
+                // use  reference types that point to player / players peices ------------------------------------------------------
+                // dont repeat your selfs
                 // Ai Takes over moves
                 if (Ai && turn == Properties.Settings.Default.userId)
                 {

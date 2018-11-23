@@ -22,16 +22,17 @@ namespace ConnectFour
         private event EventHandler<CanvasClickedArgs> OnMoveMade;
         private event EventHandler<bool> OnAiChecked;
         public Form1()
-        {            
-            InitializeComponent();
-
+        {      
             
+            InitializeComponent();
+            Player player = new Player("bob", Color.Blue);
+            ChatScreen.Text = Player.Count.ToString();
             engine = new GameEngine(canvas.Size.Height, canvas.Size.Width);
             socket = new TcpConnect(4443);
             this.DoubleBuffered = true;
             //this.Paint += new PaintEventHandler(GameUpdate);  // subscribe to the form paint event and run our GameUpdate
             //canvas.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Move_Mouse);
-            canvas.Enabled = false;
+            //canvas.Enabled = false;
             // form Subsciptions
             canvas.MouseMove += new MouseEventHandler(Move_Mouse);
             canvas.MouseMove += new MouseEventHandler(engine.Hover);
@@ -50,7 +51,6 @@ namespace ConnectFour
             socket.OnChatRecieved += new EventHandler<string>(chatRecieved);
             socket.OnMoveRecieved += new EventHandler<MoveArgs>(engine.Move);
         }
-
 
         
 
@@ -81,8 +81,6 @@ namespace ConnectFour
             //Invalidate();
         }
         
-
-
         private void chatRecieved(object sender, string msg)
         {
             ChatScreen.Invoke((MethodInvoker)delegate
@@ -90,8 +88,6 @@ namespace ConnectFour
                 ChatScreen.Text += msg + "\n";
             });
         }
-
-
         
         // Menu Strip
         private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -104,7 +100,6 @@ namespace ConnectFour
             NewGame form2 = new NewGame();
             form2.Show();
         }
-
 
         // NetWorking Stuff
         private void connectButton_Click(object sender, EventArgs e)
@@ -198,8 +193,6 @@ namespace ConnectFour
             }
             base.Dispose(disposing);
         }
-
-
 
         private void aiCheckBox_CheckedChanged(object sender, EventArgs e)
         {            

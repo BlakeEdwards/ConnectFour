@@ -143,6 +143,7 @@ namespace ConnectFour
             //finalize current set of inputs with <EOF>
             byte[] msgBuffer = Encoding.UTF8.GetBytes(sendData);
             netStream.Write(msgBuffer, 0, msgBuffer.Length); // Blocks
+            netStream.Flush();
             // clear the data that has been send
             sendData = "";
         }
@@ -169,6 +170,8 @@ namespace ConnectFour
                 sendData += cmd + "~";
                 if (chatcheck[0] == "Chat") { Execute_Commands(cmd, "Sent: "); }
         }
+        //extract out to seperate class commands
+        // net work is just send receive
         private void Execute_Commands(string data, string pretext)
         {
 
@@ -178,15 +181,19 @@ namespace ConnectFour
             //  setTurn•1
             //  LoadBoard•board[] ... pending to add Todo
             //  Disconnect•1             // disconect 1 = true : 0 = false
+            // chat|bob|hello world ~ move | 7
+           
+            // command [0] = chat|bob|hello world 
+            // command [1] =  move | 7
             string[] command = data.Split('~');
             for (int i = 0; i < command.Length; i++)
             {
                 string[] cmd = command[i].Split('|');
                 switch (cmd[0])
-                {
+                {// constatnats any litral the data is in the code
                     case "Chat":
                         if (cmd[1].Length > 0)
-                        {
+                        {// send obj not primatives obj validation or some function
                             OnChatRecieved?.Invoke(this, pretext + cmd[1]);
                         }
                         break;

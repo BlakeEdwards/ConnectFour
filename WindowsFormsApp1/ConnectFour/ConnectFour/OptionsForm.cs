@@ -87,6 +87,7 @@ namespace ConnectFour
             Properties.Settings.Default.backGroundColor = obGCol;
             Properties.Settings.Default.boardColor = oboardCol;
             Properties.Settings.Default.userName = userName;
+            this.Close();
         }
     }
 }
