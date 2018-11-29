@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -24,6 +25,7 @@ namespace ConnectFour
         private const int PAD = 5;
         private const int COLUMNS = 7;
         private const int ROWS = 6;
+        private Regex ipPattern = new Regex(@"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b");
         private int radius;
         
         private TcpConnect socket;
@@ -62,18 +64,33 @@ namespace ConnectFour
             socket.OnChatRecieved += new EventHandler<string>(chatRecieved);
             socket.OnMoveRecieved += new EventHandler<MoveArgs>(engine.Move);
             socket.OnNewGame += new EventHandler<GameState>(startGame);
-            
+            socket.OnDisconnect += new EventHandler(handDisiconnection);
+            socket.OnConnected += new EventHandler(handConnected);
 
             // ToDo  Plugin Engine Events That the processor will be listening to do something
             // engine Subsciptions
-            
-    
-    
+
             engine.OnWin += new EventHandler<string>(Winner);
             engine.OnUpdate += new EventHandler<Board>(SetCanvas);
             engine.OnMoveMade += new EventHandler<MoveArgs>(socket.localMoveMade);
             engine.reset();
     
+        }
+
+        private void handConnected(object sender, EventArgs e)
+        {
+            clientCheckBox.Invoke((MethodInvoker)delegate
+            {
+                clientCheckBox.Enabled = false;
+            });
+        }
+
+        private void handDisiconnection(object sender, EventArgs e)
+        {
+            clientCheckBox.Invoke((MethodInvoker)delegate
+            {
+                clientCheckBox.Enabled = true;
+            });
         }
 
         public void initializeImages()
@@ -129,7 +146,6 @@ namespace ConnectFour
         {
             Image image;
             Graphics graphic = Graphics.FromImage(boardImage);
-            Brush brush;
             switch (boardState[col, row])
             {
                 case 1:
@@ -199,9 +215,17 @@ namespace ConnectFour
         private void menuOptions_Click(object sender, EventArgs e)
         {
             OptionsForm options = new OptionsForm();
+            options.OnSettingschange += new EventHandler(handelSettingsChange);
+                      
             options.Show();
             initializeImages();
         }
+
+        private void handelSettingsChange(object sender, EventArgs e)
+        {
+            initializeImages();
+        }
+
         private void menuNewGame_Click(object sender, EventArgs e)
         {
             if (socket.networkActive)
@@ -251,11 +275,11 @@ namespace ConnectFour
         {
             if (!socket.networkActive)
             {
-                if (clientCheckBox.Checked && ipInput.Text != "")
+                if (clientCheckBox.Checked && ipPattern.IsMatch(ipInput.Text))
                 {
-                    // set socket ip and make it a client
-                    socket.SetIp(ipInput.Text);
-                    setupNetwork();
+                    // set socket ip and make it a client                    
+                        socket.SetIp(ipInput.Text);
+                        setupNetwork();                                        
                 }
                 else if (!clientCheckBox.Checked)
                 {
@@ -264,24 +288,33 @@ namespace ConnectFour
                 }
                 else
                 {
-                    MessageBox.Show("Please Enter IP Address");
+                    MessageBox.Show("Please Enter valid IP Address");
                 }
             }
         }
         private void clientCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            if (clientCheckBox.Checked)
+            if (!socket.networkActive)
             {
-                connectButton.Text = "Connect";
-                menuNewGame.Enabled = false;
-                menuLoadGame.Enabled = false;
+                if (clientCheckBox.Checked)
+                {
+                    connectButton.Text = "Connect";
+                    menuNewGame.Enabled = false;
+                    menuLoadGame.Enabled = false;
+                }
+                else
+                {
+                    menuNewGame.Enabled = true;
+                    menuLoadGame.Enabled = true;
+                    connectButton.Text = "Host Game";
+                    try { socket.SetIp(""); } catch { }
+                }                
             }
             else
             {
-                menuNewGame.Enabled = true;
-                menuLoadGame.Enabled = true;
-                connectButton.Text = "Host Game";
-                try { socket.SetIp(""); } catch { }
+               // if (clientCheckBox.Checked) { clientCheckBox.Checked = false; }
+                //else { clientCheckBox.Checked = true; }
+            
             }
         }
         private void setupNetwork()
@@ -321,6 +354,10 @@ namespace ConnectFour
             socket.OnError -= new EventHandler<string>(ErrorBox);
             socket.OnChatRecieved -= new EventHandler<string>(chatRecieved);
             socket.OnMoveRecieved -= new EventHandler<MoveArgs>(engine.Move);
+            socket.OnNewGame -= new EventHandler<GameState>(startGame);
+            socket.OnDisconnect -= new EventHandler(handDisiconnection);
+            socket.OnConnected -= new EventHandler(handConnected);
+
             Thread.Sleep(50);
             socket.Dispose();
             //Thread.Sleep(500);   // wait for network to close connection            
@@ -342,6 +379,20 @@ namespace ConnectFour
                 ":" + messageInput.Text);
             messageInput.Text = "";
         }
+
+        private void ipInput_TextChanged(object sender, EventArgs e)
+        {            
+            if (!ipPattern.IsMatch(ipInput.Text))
+            {
+                if (ipInput.Text.Length > 0)
+                {
+                    ipWarningLabel.Text = "Warning IP address not valid";
+                }
+
+            }
+            else { ipWarningLabel.Text = ""; }
+        }
+
         private void testButton_Click(object sender, EventArgs e)
         {
             initializeImages();

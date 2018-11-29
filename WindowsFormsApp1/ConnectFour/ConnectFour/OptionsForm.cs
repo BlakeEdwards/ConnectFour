@@ -12,6 +12,7 @@ namespace ConnectFour
 {
     public partial class OptionsForm : Form
     {
+        public event EventHandler OnSettingschange;
         private string userName;
         private Color oplay1Col, oplay2Col, obGCol, oboardCol;
         public OptionsForm()
@@ -61,9 +62,40 @@ namespace ConnectFour
             }
         }
 
+        private void img1Check_Click(object sender, EventArgs e)
+        {
+            if (img1Check.Checked && img1PathLabel.Text == "") img1PathLabel.Text = getPath(); 
+        }
+        private void img2Check_CheckedChanged(object sender, EventArgs e)
+        {
+            if (img2Check.Checked && img2PathLabel.Text == "") img2PathLabel.Text = getPath();
+        }
+        
+        private void selectPath1Button_Click(object sender, EventArgs e)
+        {
+            img1Check.Checked = true;
+            img1PathLabel.Text = getPath();
+        }
+        private void selectPath2Button_Click(object sender, EventArgs e)
+        {
+            img2Check.Checked = true;            
+            img2PathLabel.Text = getPath(); 
+        }
+
+        private string getPath()
+        {
+            getPathDialog.Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png";
+            if (getPathDialog.ShowDialog() == DialogResult.OK)
+            {
+                return getPathDialog.FileName;
+            }
+                return "";
+        }
+
         private void OptionsForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             colorDialog1.Dispose();
+            getPathDialog.Dispose();
         }
 
         private void boardCol_Click(object sender, EventArgs e)
@@ -87,6 +119,11 @@ namespace ConnectFour
             Properties.Settings.Default.backGroundColor = obGCol;
             Properties.Settings.Default.boardColor = oboardCol;
             Properties.Settings.Default.userName = userName;
+            Properties.Settings.Default.play1ImagePath = img1PathLabel.Text;
+            Properties.Settings.Default.play2ImagePath = img2PathLabel.Text;
+            Properties.Settings.Default.useImg1 =img1Check.Checked ;
+            Properties.Settings.Default.useImg2 = img2Check.Checked;
+            OnSettingschange?.Invoke(this, new EventArgs());
             this.Close();
         }
     }

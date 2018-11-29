@@ -24,10 +24,9 @@ namespace ConnectFour
         public event EventHandler<MoveArgs> OnMoveRecieved;
         public event EventHandler<string> OnChatRecieved;
         public event EventHandler<string> OnError;
-        public event EventHandler<GameState> OnNewGame;
-        
-        public event EventHandler OnConnect;
+        public event EventHandler<GameState> OnNewGame;        
         public event EventHandler OnDisconnect;
+        public event EventHandler OnConnected;
 
         /// <summary>
         /// Setup will create a server
@@ -96,7 +95,7 @@ namespace ConnectFour
                     otherSideClosing = true;
                 }
             }
-            if (client != null)
+            if (client != null && networkActive)
             {
                 HandShake();
                 Network_loop();
@@ -119,6 +118,7 @@ namespace ConnectFour
             netStream.Flush();
 
             Properties.Settings.Default.otherPlayer = recieveData;
+            if (OnConnected !=null) OnConnected(this, new EventArgs());
         }
 
         internal void localMoveMade(object sender, MoveArgs e)
@@ -252,6 +252,7 @@ namespace ConnectFour
             }
             catch (Exception e) { Console.WriteLine(e.ToString()); }
             OnDisconnect?.Invoke(this, new EventArgs());
+            networkActive = false;
             otherSideClosing = false;
         }
 

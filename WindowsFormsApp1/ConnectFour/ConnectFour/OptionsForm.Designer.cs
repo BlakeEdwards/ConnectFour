@@ -39,7 +39,16 @@
             this.play2Col = new System.Windows.Forms.PictureBox();
             this.boardCol = new System.Windows.Forms.PictureBox();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
-            this.button1 = new System.Windows.Forms.Button();
+            this.saveButton = new System.Windows.Forms.Button();
+            this.img1Check = new System.Windows.Forms.CheckBox();
+            this.img1PathLabel = new System.Windows.Forms.Label();
+            this.selectPath1Button = new System.Windows.Forms.Button();
+            this.img2PathLabel = new System.Windows.Forms.Label();
+            this.img2Check = new System.Windows.Forms.CheckBox();
+            this.selectPath2Button = new System.Windows.Forms.Button();
+            this.getPathDialog = new System.Windows.Forms.OpenFileDialog();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.play1Col)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bGCol)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.play2Col)).BeginInit();
@@ -75,7 +84,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 109);
+            this.label3.Location = new System.Drawing.Point(13, 156);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(79, 13);
             this.label3.TabIndex = 4;
@@ -84,7 +93,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(302, 109);
+            this.label4.Location = new System.Drawing.Point(396, 156);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(68, 13);
             this.label4.TabIndex = 8;
@@ -93,7 +102,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(302, 56);
+            this.label5.Location = new System.Drawing.Point(396, 56);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(98, 13);
             this.label5.TabIndex = 7;
@@ -112,7 +121,7 @@
             // bGCol
             // 
             this.bGCol.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.bGCol.Location = new System.Drawing.Point(406, 44);
+            this.bGCol.Location = new System.Drawing.Point(500, 44);
             this.bGCol.Name = "bGCol";
             this.bGCol.Size = new System.Drawing.Size(70, 36);
             this.bGCol.TabIndex = 10;
@@ -122,7 +131,7 @@
             // play2Col
             // 
             this.play2Col.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.play2Col.Location = new System.Drawing.Point(116, 97);
+            this.play2Col.Location = new System.Drawing.Point(117, 144);
             this.play2Col.Name = "play2Col";
             this.play2Col.Size = new System.Drawing.Size(70, 36);
             this.play2Col.TabIndex = 11;
@@ -132,30 +141,118 @@
             // boardCol
             // 
             this.boardCol.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.boardCol.Location = new System.Drawing.Point(406, 97);
+            this.boardCol.Location = new System.Drawing.Point(500, 144);
             this.boardCol.Name = "boardCol";
             this.boardCol.Size = new System.Drawing.Size(70, 36);
             this.boardCol.TabIndex = 12;
             this.boardCol.TabStop = false;
             this.boardCol.Click += new System.EventHandler(this.boardCol_Click);
             // 
-            // button1
+            // saveButton
             // 
-            this.button1.Location = new System.Drawing.Point(529, 151);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(70, 29);
-            this.button1.TabIndex = 13;
-            this.button1.Text = "Save";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.saveButton.Location = new System.Drawing.Point(607, 184);
+            this.saveButton.Name = "saveButton";
+            this.saveButton.Size = new System.Drawing.Size(70, 29);
+            this.saveButton.TabIndex = 13;
+            this.saveButton.Text = "Save";
+            this.saveButton.UseVisualStyleBackColor = true;
+            this.saveButton.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // img1Check
+            // 
+            this.img1Check.AutoSize = true;
+            this.img1Check.Location = new System.Drawing.Point(209, 44);
+            this.img1Check.Name = "img1Check";
+            this.img1Check.Size = new System.Drawing.Size(131, 17);
+            this.img1Check.TabIndex = 14;
+            this.img1Check.Text = "Use image for player 1";
+            this.img1Check.UseVisualStyleBackColor = true;
+            this.img1Check.Click += new System.EventHandler(this.img1Check_Click);
+            // 
+            // img1PathLabel
+            // 
+            this.img1PathLabel.AutoSize = true;
+            this.img1PathLabel.Location = new System.Drawing.Point(117, 97);
+            this.img1PathLabel.Name = "img1PathLabel";
+            this.img1PathLabel.Size = new System.Drawing.Size(0, 13);
+            this.img1PathLabel.TabIndex = 15;
+            // 
+            // selectPath1Button
+            // 
+            this.selectPath1Button.Location = new System.Drawing.Point(209, 67);
+            this.selectPath1Button.Name = "selectPath1Button";
+            this.selectPath1Button.Size = new System.Drawing.Size(131, 21);
+            this.selectPath1Button.TabIndex = 16;
+            this.selectPath1Button.Text = "Select Image";
+            this.selectPath1Button.UseVisualStyleBackColor = true;
+            this.selectPath1Button.Click += new System.EventHandler(this.selectPath1Button_Click);
+            // 
+            // img2PathLabel
+            // 
+            this.img2PathLabel.AutoSize = true;
+            this.img2PathLabel.Location = new System.Drawing.Point(117, 200);
+            this.img2PathLabel.Name = "img2PathLabel";
+            this.img2PathLabel.Size = new System.Drawing.Size(0, 13);
+            this.img2PathLabel.TabIndex = 18;
+            // 
+            // img2Check
+            // 
+            this.img2Check.AutoSize = true;
+            this.img2Check.Location = new System.Drawing.Point(209, 147);
+            this.img2Check.Name = "img2Check";
+            this.img2Check.Size = new System.Drawing.Size(131, 17);
+            this.img2Check.TabIndex = 17;
+            this.img2Check.Text = "Use image for player 1";
+            this.img2Check.UseVisualStyleBackColor = true;
+            this.img2Check.CheckedChanged += new System.EventHandler(this.img2Check_CheckedChanged);
+            // 
+            // selectPath2Button
+            // 
+            this.selectPath2Button.Location = new System.Drawing.Point(209, 170);
+            this.selectPath2Button.Name = "selectPath2Button";
+            this.selectPath2Button.Size = new System.Drawing.Size(131, 21);
+            this.selectPath2Button.TabIndex = 19;
+            this.selectPath2Button.Text = "Select Image";
+            this.selectPath2Button.UseVisualStyleBackColor = true;
+            this.selectPath2Button.Click += new System.EventHandler(this.selectPath2Button_Click);
+            // 
+            // getPathDialog
+            // 
+            this.getPathDialog.FileName = "openFileDialog1";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(16, 97);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(76, 13);
+            this.label6.TabIndex = 20;
+            this.label6.Text = "Image file path";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(16, 200);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(76, 13);
+            this.label7.TabIndex = 21;
+            this.label7.Text = "Image file path";
             // 
             // OptionsForm
             // 
-            this.AcceptButton = this.button1;
+            this.AcceptButton = this.saveButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(620, 192);
-            this.Controls.Add(this.button1);
+            this.ClientSize = new System.Drawing.Size(689, 226);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.selectPath2Button);
+            this.Controls.Add(this.img2PathLabel);
+            this.Controls.Add(this.img2Check);
+            this.Controls.Add(this.selectPath1Button);
+            this.Controls.Add(this.img1PathLabel);
+            this.Controls.Add(this.img1Check);
+            this.Controls.Add(this.saveButton);
             this.Controls.Add(this.boardCol);
             this.Controls.Add(this.play2Col);
             this.Controls.Add(this.bGCol);
@@ -169,7 +266,6 @@
             this.Name = "OptionsForm";
             this.ShowIcon = false;
             this.Text = "Custom Settings";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OptionsForm_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.play1Col)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.bGCol)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.play2Col)).EndInit();
@@ -191,6 +287,15 @@
         private System.Windows.Forms.PictureBox play2Col;
         private System.Windows.Forms.PictureBox boardCol;
         private System.Windows.Forms.ColorDialog colorDialog1;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button saveButton;
+        private System.Windows.Forms.CheckBox img1Check;
+        private System.Windows.Forms.Label img1PathLabel;
+        private System.Windows.Forms.Button selectPath1Button;
+        private System.Windows.Forms.Label img2PathLabel;
+        private System.Windows.Forms.CheckBox img2Check;
+        private System.Windows.Forms.Button selectPath2Button;
+        private System.Windows.Forms.OpenFileDialog getPathDialog;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label7;
     }
 }

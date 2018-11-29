@@ -17,7 +17,6 @@ namespace ConnectFour
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.canvas = new System.Windows.Forms.PictureBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.gameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -41,6 +40,7 @@ namespace ConnectFour
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.ipWarningLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.canvas)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -84,21 +84,21 @@ namespace ConnectFour
             // 
             this.menuNewGame.Name = "menuNewGame";
             this.menuNewGame.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.menuNewGame.Size = new System.Drawing.Size(152, 22);
+            this.menuNewGame.Size = new System.Drawing.Size(141, 22);
             this.menuNewGame.Text = "New";
             this.menuNewGame.Click += new System.EventHandler(this.menuNewGame_Click);
             // 
             // menuSaveGame
             // 
             this.menuSaveGame.Name = "menuSaveGame";
-            this.menuSaveGame.Size = new System.Drawing.Size(152, 22);
+            this.menuSaveGame.Size = new System.Drawing.Size(141, 22);
             this.menuSaveGame.Text = "Save Game";
             this.menuSaveGame.Click += new System.EventHandler(this.menuSaveGame_Click);
             // 
             // menuLoadGame
             // 
             this.menuLoadGame.Name = "menuLoadGame";
-            this.menuLoadGame.Size = new System.Drawing.Size(152, 22);
+            this.menuLoadGame.Size = new System.Drawing.Size(141, 22);
             this.menuLoadGame.Text = "Load Game";
             this.menuLoadGame.Click += new System.EventHandler(this.menuLoadGame_Click);
             // 
@@ -174,6 +174,7 @@ namespace ConnectFour
             this.ipInput.Size = new System.Drawing.Size(100, 20);
             this.ipInput.TabIndex = 8;
             this.ipInput.Text = "127.0.0.1";
+            this.ipInput.TextChanged += new System.EventHandler(this.ipInput_TextChanged);
             // 
             // clientCheckBox
             // 
@@ -229,11 +230,22 @@ namespace ConnectFour
             // 
             this.openFileDialog.FileName = "openFileDialog1";
             // 
+            // ipWarningLabel
+            // 
+            this.ipWarningLabel.AutoSize = true;
+            this.ipWarningLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ipWarningLabel.ForeColor = System.Drawing.Color.Red;
+            this.ipWarningLabel.Location = new System.Drawing.Point(641, 169);
+            this.ipWarningLabel.Name = "ipWarningLabel";
+            this.ipWarningLabel.Size = new System.Drawing.Size(0, 16);
+            this.ipWarningLabel.TabIndex = 14;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(905, 661);
+            this.Controls.Add(this.ipWarningLabel);
             this.Controls.Add(this.SendMsgButton);
             this.Controls.Add(this.testButton);
             this.Controls.Add(this.disconectButton);
@@ -247,7 +259,6 @@ namespace ConnectFour
             this.Controls.Add(this.messageInput);
             this.Controls.Add(this.canvas);
             this.Controls.Add(this.menuStrip1);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(921, 700);
@@ -288,6 +299,7 @@ namespace ConnectFour
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
+        private System.Windows.Forms.Label ipWarningLabel;
     }
 }
 

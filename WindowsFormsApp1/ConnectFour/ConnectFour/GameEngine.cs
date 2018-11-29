@@ -27,11 +27,8 @@ namespace ConnectFour
         /// <param name="hieght"></param>
         /// <param name="width"></param>
         public GameEngine(int hieght,int width)
-        {   
-            Random generateTurn = new Random();
-            int setTurn = generateTurn.Next(0, 10);
-            setTurn = setTurn > 5 ? 1 : -1;
-            setUpEngine(hieght, width, setTurn,new int[Board.nColumns, Board.nRows]);
+        {                           
+            setUpEngine(hieght, width, 0,new int[Board.nColumns, Board.nRows]);
         }        
         /// <summary>
         /// Initiate with a set player to Start
@@ -58,18 +55,19 @@ namespace ConnectFour
 
         public void StartGame(GameState gameState)
         {
+            gameActive = true;
             board.boardState = gameState.board;
             Turn = gameState.turn;
             updateEvent();
         }
 
         public void setUpEngine(int hieght, int width, int turn, int[,] boardState)
-        {
+        {            
             Ai = false;
             this.Turn = turn;
             Width = width;
             // Todo use this to test if game is active and enable /diable engine.Onupdate.
-            gameActive = true;
+            
             board = new Board(hieght, Width,boardState);
             OnUpdate?.Invoke(this, board);
         }
@@ -121,32 +119,30 @@ namespace ConnectFour
             int row;
             //check a place is available in Coloum
             if (!Move_Available(col)) return; // Move Not Avaliable Return 
-            else
+            
+            //annoyouns Move to network if it was made by local player
+            if (e.playerId == Properties.Settings.Default.userId) OnMoveMade?.Invoke(this, new MoveArgs(col, Properties.Settings.Default.userId));
+            row = GetRow(col,playerId);
+            lock (board)        // Lock Board while in use
             {
-                //annoyouns Move to network if it was made by local player
-                if (e.playerId == Properties.Settings.Default.userId) OnMoveMade?.Invoke(this, new MoveArgs(col, Properties.Settings.Default.userId));
-                row = GetRow(col,playerId);
-                lock (board)        // Lock Board while in use
-                {
-                    board.boardState[col, row] = e.playerId;      //update Boardstate With move
-                    OnUpdate(this, board);
-                }
-                Turn *= -1;   // use
-                // use  reference types that point to player / players peices ------------------------------------------------------
-                // dont repeat your selfs
-
-                // Ai Takes over moves
-                if (Ai && Turn == Properties.Settings.Default.userId)
-                {
-                    AiPlayer();
-                }
+                board.boardState[col, row] = e.playerId;      //update Boardstate With move
+                OnUpdate(this, board);
             }
+            Turn *= -1;   // use
+                          // use  reference types that point to player / players peices ------------------------------------------------------
+                          // dont repeat your selfs
+
+            // Ai Takes over moves
+            
             if (win(e.playerId, col, row))
             {
                 gameActive = false;
                 OnWin?.Invoke(this, e.playerId.ToString()); // Publish Win Event
             }
-
+            if (Ai && gameActive && Turn == Properties.Settings.Default.userId)
+            {
+                AiPlayer();
+            }
         }
 
         /// <summary>
@@ -193,7 +189,6 @@ namespace ConnectFour
          * 1 = player 1
          * -1 = player 2
          */
-
         internal GameState GetGameState() => new GameState(Turn, board.boardState);
         private bool win(int playerId,int col,int row)
         {            
@@ -297,7 +292,7 @@ namespace ConnectFour
         public void SetAi(object obj,bool value)
         {
             Ai = value;
-            if(Ai && Turn == Properties.Settings.Default.userId) { AiPlayer(); }
+            if(Ai && gameActive && Turn == Properties.Settings.Default.userId) { AiPlayer(); }
         }
 
         private void updateEvent()
